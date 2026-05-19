@@ -3,6 +3,7 @@
  * Click nbfs://nbhost/SystemFileSystem/Templates/Classes/Class.java to edit this template
  */
 package com.estructuras;
+
 import org.jaudiotagger.audio.AudioFile;
 import org.jaudiotagger.audio.AudioFileIO;
 import org.jaudiotagger.audio.AudioHeader;
@@ -10,6 +11,7 @@ import org.jaudiotagger.tag.Tag;
 import org.jaudiotagger.tag.FieldKey;
 import java.io.File;
 import javax.swing.DefaultListModel;
+
 /**
  *
  * @author pchin
@@ -116,6 +118,9 @@ public class ArbolBinario {
 
         Tag tag          = audioFile.getTag();
         AudioHeader header = audioFile.getAudioHeader();
+        
+        
+
 
         String nombre  = tag.getFirst(FieldKey.TITLE);
         String artista = tag.getFirst(FieldKey.ARTIST);
@@ -124,6 +129,8 @@ public class ArbolBinario {
         String año     = tag.getFirst(FieldKey.YEAR);
         int duracion   = header.getTrackLength();
         long tamaño    = archivo.length();
+        
+
 
         // Llama tu método insertar directamente
         this.insertar(nombre, artista, album, genero, duracion, tamaño, ruta, año);
@@ -184,4 +191,6 @@ public class ArbolBinario {
         modelo.addElement(cancion);
         inOrderALista(cancion.derecha, modelo);
     }
+
+
 }

@@ -14,6 +14,7 @@ import java.awt.Component;
 import javax.swing.DefaultListCellRenderer;
 import javax.swing.DefaultListModel;
 import javax.swing.JList;
+import javax.swing.ListCellRenderer;
 import javax.swing.ListModel;
 
 
@@ -35,24 +36,21 @@ public class Inicio extends javax.swing.JFrame {
      */
     public Inicio() {
         initComponents();
-        listadoCanciones.setModel((ListModel) modeloLista);
+        listadoCanciones.setModel(modeloLista);
         
         listadoCanciones.setCellRenderer(new DefaultListCellRenderer() {
-        @Override
-        public Component getListCellRendererComponent(JList<?> list, Object value,
+            @Override
+            public Component getListCellRendererComponent(JList<?> list, Object value,
                 int index, boolean isSelected, boolean cellHasFocus) {
 
-            super.getListCellRendererComponent(list, value, index, isSelected, cellHasFocus);
+                    super.getListCellRendererComponent(list, value, index, isSelected, cellHasFocus);
 
-            Cancion c = (Cancion) value;
-            setText(c.nombre + " — " + c.artista + " | " + c.album + " (" + c.duracionReal + ")");
+                    Cancion c = (Cancion) value;
+                    setText(c.nombre + " — " + c.artista + " | " + c.album + " (" + c.duracionReal + ")");
 
-            return this;
-        }
+                    return this;
+                }
         });
-        
-        
-
         
     }
 
@@ -87,11 +85,6 @@ public class Inicio extends javax.swing.JFrame {
 
         agregarButton.setFont(new java.awt.Font("Gontserrat", 0, 12)); // NOI18N
         agregarButton.setText("Agregar Musica");
-        agregarButton.addMouseListener(new java.awt.event.MouseAdapter() {
-            public void mouseClicked(java.awt.event.MouseEvent evt) {
-                agregarButtonMouseClicked(evt);
-            }
-        });
         agregarButton.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 agregarButtonActionPerformed(evt);
@@ -115,6 +108,10 @@ public class Inicio extends javax.swing.JFrame {
         jPanel1.add(ScrollCanciones, new org.netbeans.lib.awtextra.AbsoluteConstraints(520, 130, 260, 600));
 
         listadoCanciones.setBackground(new java.awt.Color(102, 102, 102));
+        listadoCanciones.setForeground(new java.awt.Color(102, 102, 102));
+        listadoCanciones.setModel(modeloLista);
+        listadoCanciones.setCursor(new java.awt.Cursor(java.awt.Cursor.DEFAULT_CURSOR));
+        listadoCanciones.setSelectionForeground(new java.awt.Color(51, 51, 51));
         jScrollPane1.setViewportView(listadoCanciones);
 
         jPanel1.add(jScrollPane1, new org.netbeans.lib.awtextra.AbsoluteConstraints(30, 140, 270, 510));
@@ -141,7 +138,7 @@ public class Inicio extends javax.swing.JFrame {
         
     }//GEN-LAST:event_playlistButtonMouseClicked
 
-    private void agregarButtonMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_agregarButtonMouseClicked
+    private void agregarButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_agregarButtonActionPerformed
         JFileChooser chooser = new JFileChooser();
 
         chooser.setFileSelectionMode(JFileChooser.DIRECTORIES_ONLY);
@@ -153,11 +150,7 @@ public class Inicio extends javax.swing.JFrame {
                     ArbolBinario arbol = ArbolBinario.getInstancia();
                     arbol.cargarCarpeta(carpeta.getAbsolutePath());
                     arbol.inOrderALista(arbol.raiz, modeloLista);
-                }
-    }//GEN-LAST:event_agregarButtonMouseClicked
-
-    private void agregarButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_agregarButtonActionPerformed
-        // TODO add your handling code here:
+        }
     }//GEN-LAST:event_agregarButtonActionPerformed
 
     /**
@@ -191,7 +184,7 @@ public class Inicio extends javax.swing.JFrame {
     private javax.swing.JButton agregarButton;
     private javax.swing.JPanel jPanel1;
     private javax.swing.JScrollPane jScrollPane1;
-    private javax.swing.JList<String> listadoCanciones;
+    private javax.swing.JList<Cancion> listadoCanciones;
     private javax.swing.JButton playlistButton;
     private javax.swing.JLabel spotifyLabel;
     private javax.swing.JTextArea txtCanciones;

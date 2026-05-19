@@ -4,12 +4,14 @@
  */
 package com.estructuras;
 
+
+
 /**
  *
  * @author pchin
  */
 public class Cancion {
-    
+
     public String nombre;
     public String artista;
     public String album;
