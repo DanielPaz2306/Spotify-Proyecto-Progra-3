@@ -14,6 +14,7 @@ import java.awt.Component;
 import javax.swing.DefaultListCellRenderer;
 import javax.swing.DefaultListModel;
 import javax.swing.JList;
+import javax.swing.JOptionPane;
 import javax.swing.ListCellRenderer;
 import javax.swing.ListModel;
 
@@ -46,7 +47,7 @@ public class Inicio extends javax.swing.JFrame {
                     super.getListCellRendererComponent(list, value, index, isSelected, cellHasFocus);
 
                     Cancion c = (Cancion) value;
-                    setText(c.nombre + " — " + c.artista + " | " + c.album + " (" + c.duracionReal + ")");
+                    setText(c.nombre + " — " + c.artista +  " (" + c.duracionReal + ")");
 
                     return this;
                 }
@@ -67,10 +68,10 @@ public class Inicio extends javax.swing.JFrame {
         spotifyLabel = new javax.swing.JLabel();
         agregarButton = new javax.swing.JButton();
         playlistButton = new javax.swing.JButton();
-        ScrollCanciones = new javax.swing.JScrollPane();
-        txtCanciones = new javax.swing.JTextArea();
         jScrollPane1 = new javax.swing.JScrollPane();
         listadoCanciones = new javax.swing.JList<>();
+        txtBuscar = new javax.swing.JTextField();
+        btnBuscar = new javax.swing.JButton();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
 
@@ -81,16 +82,16 @@ public class Inicio extends javax.swing.JFrame {
         spotifyLabel.setForeground(new java.awt.Color(0, 255, 51));
         spotifyLabel.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
         spotifyLabel.setText("Spotify");
-        jPanel1.add(spotifyLabel, new org.netbeans.lib.awtextra.AbsoluteConstraints(0, 20, 1020, -1));
+        jPanel1.add(spotifyLabel, new org.netbeans.lib.awtextra.AbsoluteConstraints(160, 20, 1020, -1));
 
         agregarButton.setFont(new java.awt.Font("Gontserrat", 0, 12)); // NOI18N
-        agregarButton.setText("Agregar Musica");
+        agregarButton.setText("Importar Musica");
         agregarButton.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 agregarButtonActionPerformed(evt);
             }
         });
-        jPanel1.add(agregarButton, new org.netbeans.lib.awtextra.AbsoluteConstraints(30, 80, 130, 30));
+        jPanel1.add(agregarButton, new org.netbeans.lib.awtextra.AbsoluteConstraints(30, 20, 130, 30));
 
         playlistButton.setFont(new java.awt.Font("Gontserrat", 0, 12)); // NOI18N
         playlistButton.setText("Playlist");
@@ -101,34 +102,41 @@ public class Inicio extends javax.swing.JFrame {
         });
         jPanel1.add(playlistButton, new org.netbeans.lib.awtextra.AbsoluteConstraints(730, 80, 130, 30));
 
-        txtCanciones.setColumns(20);
-        txtCanciones.setRows(5);
-        ScrollCanciones.setViewportView(txtCanciones);
-
-        jPanel1.add(ScrollCanciones, new org.netbeans.lib.awtextra.AbsoluteConstraints(520, 130, 260, 600));
-
         listadoCanciones.setBackground(new java.awt.Color(102, 102, 102));
-        listadoCanciones.setForeground(new java.awt.Color(102, 102, 102));
+        listadoCanciones.setFont(new java.awt.Font("Gontserrat", 0, 14)); // NOI18N
+        listadoCanciones.setForeground(new java.awt.Color(255, 255, 255));
         listadoCanciones.setModel(modeloLista);
         listadoCanciones.setCursor(new java.awt.Cursor(java.awt.Cursor.DEFAULT_CURSOR));
         listadoCanciones.setSelectionForeground(new java.awt.Color(51, 51, 51));
         jScrollPane1.setViewportView(listadoCanciones);
 
-        jPanel1.add(jScrollPane1, new org.netbeans.lib.awtextra.AbsoluteConstraints(30, 140, 270, 510));
+        jPanel1.add(jScrollPane1, new org.netbeans.lib.awtextra.AbsoluteConstraints(30, 140, 340, 510));
+
+        txtBuscar.setFont(new java.awt.Font("Gontserrat", 0, 12)); // NOI18N
+        jPanel1.add(txtBuscar, new org.netbeans.lib.awtextra.AbsoluteConstraints(30, 100, 240, -1));
+
+        btnBuscar.setFont(new java.awt.Font("Gontserrat", 0, 12)); // NOI18N
+        btnBuscar.setText("Buscar");
+        btnBuscar.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                btnBuscarActionPerformed(evt);
+            }
+        });
+        jPanel1.add(btnBuscar, new org.netbeans.lib.awtextra.AbsoluteConstraints(280, 100, 90, -1));
 
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
         getContentPane().setLayout(layout);
         layout.setHorizontalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGap(0, 1040, Short.MAX_VALUE)
+            .addGap(0, 1321, Short.MAX_VALUE)
             .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                .addComponent(jPanel1, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+                .addComponent(jPanel1, javax.swing.GroupLayout.DEFAULT_SIZE, 1321, Short.MAX_VALUE))
         );
         layout.setVerticalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGap(0, 760, Short.MAX_VALUE)
+            .addGap(0, 862, Short.MAX_VALUE)
             .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                .addComponent(jPanel1, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+                .addComponent(jPanel1, javax.swing.GroupLayout.DEFAULT_SIZE, 862, Short.MAX_VALUE))
         );
 
         pack();
@@ -144,14 +152,20 @@ public class Inicio extends javax.swing.JFrame {
         chooser.setFileSelectionMode(JFileChooser.DIRECTORIES_ONLY);
 
                 int resultado = chooser.showOpenDialog(null);
-                if (resultado == JFileChooser.APPROVE_OPTION) {
+        if (resultado == JFileChooser.APPROVE_OPTION) {
 
                     File carpeta = chooser.getSelectedFile();
                     ArbolBinario arbol = ArbolBinario.getInstancia();
                     arbol.cargarCarpeta(carpeta.getAbsolutePath());
                     arbol.inOrderALista(arbol.raiz, modeloLista);
+                    JOptionPane.showMessageDialog(this, "Canciones agregadas correctamente");
+                    
         }
     }//GEN-LAST:event_agregarButtonActionPerformed
+
+    private void btnBuscarActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnBuscarActionPerformed
+       buscarCancion(txtBuscar.getText());
+    }//GEN-LAST:event_btnBuscarActionPerformed
 
     /**
      * @param args the command line arguments
@@ -180,13 +194,34 @@ public class Inicio extends javax.swing.JFrame {
 
     
     // Variables declaration - do not modify//GEN-BEGIN:variables
-    private javax.swing.JScrollPane ScrollCanciones;
     private javax.swing.JButton agregarButton;
+    private javax.swing.JButton btnBuscar;
     private javax.swing.JPanel jPanel1;
     private javax.swing.JScrollPane jScrollPane1;
     private javax.swing.JList<Cancion> listadoCanciones;
     private javax.swing.JButton playlistButton;
     private javax.swing.JLabel spotifyLabel;
-    private javax.swing.JTextArea txtCanciones;
+    private javax.swing.JTextField txtBuscar;
     // End of variables declaration//GEN-END:variables
+
+    private void buscarCancion(String textoBusqueda) {
+        if (textoBusqueda.isEmpty()) {
+            return;
+        }
+
+        for (int i = 0; i < modeloLista.getSize(); i++) {
+            
+            Cancion c = modeloLista.getElementAt(i);
+
+            if (c.nombre.equalsIgnoreCase(textoBusqueda) || c.artista.equalsIgnoreCase(textoBusqueda)) {
+
+                listadoCanciones.setSelectedIndex(i);      //lo selecciona
+                listadoCanciones.ensureIndexIsVisible(i);   // desplaza la lista hasta ahi
+                return;
+            }
+        }
+
+        javax.swing.JOptionPane.showMessageDialog(this, "Canción no encontrada", "Búsqueda", javax.swing.JOptionPane.INFORMATION_MESSAGE);
+    }
+
 }

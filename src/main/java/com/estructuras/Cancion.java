@@ -27,6 +27,9 @@ public class Cancion {
     
     public Cancion izquierda;
     public Cancion derecha;
+    
+    public Cancion siguiente;
+    public Cancion anterior;
 
     public Cancion(String nombre, String artista, String album, String genero, int duracion, long tamaño, String ruta, String año) {
         this.nombre = nombre;
@@ -40,8 +43,25 @@ public class Cancion {
         this.ruta = ruta;
         this.año = año;
         this.altura = 1;
-        
+        this.siguiente = null;
+        this.derecha = null;
+        this.izquierda = null;
     }
     
+    public Cancion(String nombre, String artista, String album, String genero, int duracion, long tamaño, String ruta, String año, Cancion siguiente, Cancion anterior){
+        this.nombre = nombre;
+        this.artista = artista;
+        this.album = album;
+        this.genero = genero;
+        int m = duracion / 60;
+        int s = duracion % 60;
+        this.duracionReal = m + "m " + s + "seg";
+        this.tamaño = tamaño;
+        this.ruta = ruta;
+        this.año = año;
+        this.altura = 1;
+        this.siguiente = siguiente;
+        this.anterior = anterior;
+    }
     
 }
