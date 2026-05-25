@@ -1,12 +1,20 @@
 package com.estructuras;
 
+import java.io.File;
+import javax.swing.JOptionPane;
+import org.jaudiotagger.audio.AudioFile;
+import org.jaudiotagger.audio.AudioFileIO;
+import org.jaudiotagger.audio.AudioHeader;
+import org.jaudiotagger.tag.FieldKey;
+import org.jaudiotagger.tag.Tag;
+
 public class ListaDobleEnlazadaCircular {
 
     public Cancion inicio;
     public Cancion fin;
     public int contador;
 
-    private ListaDobleEnlazadaCircular() {
+    public ListaDobleEnlazadaCircular() {
         inicio = fin = null;
         contador = 0;
     }
@@ -20,9 +28,8 @@ public class ListaDobleEnlazadaCircular {
         
         if(EstaVacia()){
             inicio = fin = nuevo;
-            
-            inicio.siguiente = inicio;
-            inicio.anterior = inicio;
+            nuevo.siguiente = nuevo;
+            nuevo.anterior = nuevo;
         }
         
         else{
@@ -30,7 +37,7 @@ public class ListaDobleEnlazadaCircular {
             nuevo.anterior = fin;
             inicio.anterior = nuevo;
             fin.siguiente = nuevo;
-            inicio = nuevo;
+            fin = nuevo;
         }
         
         contador ++;
@@ -53,7 +60,112 @@ public class ListaDobleEnlazadaCircular {
         if (c == inicio) inicio = c.siguiente;
         if (c == fin) fin = c.anterior;
         if (inicio == c) inicio = fin = null; // era el único
-
+        fin.siguiente = inicio;
+        inicio.anterior = fin;
         contador--;
     }
+
+    public void insertarDesdeCarpeta(String rutaCarpeta){
+        inicio = fin = null;
+        contador = 0;
+        
+        File carpeta = new File(rutaCarpeta);
+
+        if (!carpeta.exists() || !carpeta.isDirectory()) {
+            JOptionPane.showMessageDialog(null, "La Carpeta no EXISTE");
+            return;
+        }
+        
+        File[] archivos = carpeta.listFiles((dir, nombre) ->
+            nombre.toLowerCase().endsWith(".mp3")  ||
+            nombre.toLowerCase().endsWith(".flac") ||
+            nombre.toLowerCase().endsWith(".m4a")  ||
+            nombre.toLowerCase().endsWith(".ogg")  ||
+            nombre.toLowerCase().endsWith(".wav")
+        );
+        
+        if (archivos == null || archivos.length == 0) {
+            System.out.println("NO HAY CANCIONES EN LA CARPETA");
+            return;
+        }
+
+        int cargadas = 0;
+        int errores  = 0;
+
+        for (File archivo : archivos) {
+        try {
+            insertarDesdeArchivo(archivo.getAbsolutePath());
+            cargadas++;
+        } catch (Exception e) {
+            errores++;
+        }
+    }
+    }
+    
+    public void insertarDesdeArchivo(String ruta){
+        
+        try 
+        {
+            File archivo = new File(ruta);
+            AudioFile audioFile = AudioFileIO.read(archivo);
+            
+            Tag tag = audioFile.getTag();
+            AudioHeader header = audioFile.getAudioHeader();
+            
+            String nombre  = tag.getFirst(FieldKey.TITLE);
+            String artista = tag.getFirst(FieldKey.ARTIST);
+            String album   = tag.getFirst(FieldKey.ALBUM);
+            String genero  = tag.getFirst(FieldKey.GENRE);
+            String año     = tag.getFirst(FieldKey.YEAR);
+            int duracion   = header.getTrackLength();
+            long tamaño    = archivo.length();
+            
+            this.Insertar(nombre, artista, album, genero, duracion, tamaño, ruta, año);
+            
+        }
+        
+        catch(Exception e){
+            System.out.println("error: " + e.getMessage());
+        }
+    }
+    
+
+    public Cancion buscarSiguiente(String ruta) {
+       if (EstaVacia()) return null;
+
+       Cancion temp = inicio;
+
+       do {
+           
+           if (temp.ruta.equals(ruta)) {
+               return temp.siguiente;
+           }
+           temp = temp.siguiente;
+       } 
+       while (temp != inicio);
+
+       return null; // 
+    }
+    
+    public Cancion buscarAnterior(String ruta){
+        if(EstaVacia()) return null;
+        
+        Cancion temp = inicio;
+        
+        do {
+            if(temp.ruta.equals(ruta)){
+                return temp.anterior;
+            }
+            temp = temp.siguiente;
+        }
+        
+        while (temp != inicio);
+        
+        return null;
+    }
+    
+    public void limpiarLista(){
+        inicio = fin = null;
+    }
+    
 }

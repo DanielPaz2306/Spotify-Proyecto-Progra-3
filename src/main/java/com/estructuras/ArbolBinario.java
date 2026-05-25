@@ -19,6 +19,8 @@ import javax.swing.DefaultListModel;
 public class ArbolBinario {
     public Cancion raiz;
     private static ArbolBinario instancia;
+    
+    public int cantidad;
 
     private ArbolBinario() {}
 
@@ -44,6 +46,7 @@ public class ArbolBinario {
     
     private Cancion insertarRecursivo(Cancion actual, String nombre, String artista, String album, String genero, int duracion, long tamaño, String ruta, String año){
         if(actual == null){
+            cantidad++;
             return new Cancion(nombre, artista, album, genero, duracion, tamaño, ruta, año);
         }
         int cmp = nombre.compareToIgnoreCase(actual.nombre);
@@ -54,8 +57,11 @@ public class ArbolBinario {
         else if(cmp > 0) {
             actual.derecha = insertarRecursivo(actual.derecha, nombre, artista, album, genero, duracion, tamaño, ruta, año);
         }
+        else {
+            System.out.println("DUPLICADO: " + nombre);
+        }
         
-        
+
         return actual;
     }
     
@@ -120,11 +126,25 @@ public class ArbolBinario {
         AudioHeader header = audioFile.getAudioHeader();
         
         
+        String nombre = tag.getFirst(FieldKey.TITLE);
 
+        if (nombre == null || nombre.trim().isEmpty()) {
+            nombre = archivo.getName();
+        }
+        
+        
 
-        String nombre  = tag.getFirst(FieldKey.TITLE);
+        
         String artista = tag.getFirst(FieldKey.ARTIST);
-        String album   = tag.getFirst(FieldKey.ALBUM);
+        if (artista == null || artista.trim().isEmpty()) {
+            artista = "Desconocido";
+        }
+
+        String album = tag.getFirst(FieldKey.ALBUM);
+        if (album == null || album.trim().isEmpty()) {
+            album = "Sin álbum";
+        }
+        
         String genero  = tag.getFirst(FieldKey.GENRE);
         String año     = tag.getFirst(FieldKey.YEAR);
         int duracion   = header.getTrackLength();
@@ -132,9 +152,8 @@ public class ArbolBinario {
         
 
 
-        // Llama tu método insertar directamente
         this.insertar(nombre, artista, album, genero, duracion, tamaño, ruta, año);
-
+        
     } catch (Exception e) {
         System.out.println("Error: " + e.getMessage());
     }
@@ -190,6 +209,26 @@ public class ArbolBinario {
         inOrderALista(cancion.izquierda, modelo);
         modelo.addElement(cancion);
         inOrderALista(cancion.derecha, modelo);
+    }
+    
+    public void inOrderAListaDoble(Cancion cancion, ListaDobleEnlazadaCircular lista) {
+        if (cancion == null) return;
+
+        inOrderAListaDoble(cancion.izquierda, lista);
+
+        System.out.println("INSERTANDO ----------------------");
+        lista.Insertar(
+            cancion.nombre,
+            cancion.artista,
+            cancion.album,
+            cancion.genero,
+            cancion.duracionSeg, 
+            cancion.tamaño,
+            cancion.ruta,
+            cancion.año
+        );
+
+        inOrderAListaDoble(cancion.derecha, lista);
     }
 
 

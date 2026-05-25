@@ -41,6 +41,18 @@
             <artifactId>AbsoluteLayout</artifactId>
             <version>RELEASE260</version>
         </dependency>
+        <dependency>
+            <groupId>org.openjfx</groupId>
+            <artifactId>javafx-media</artifactId>
+            <version>24</version>
+            <type>jar</type>
+        </dependency>
+        <dependency>
+            <groupId>org.jfxcore</groupId>
+            <artifactId>javafx-swing</artifactId>
+            <version>18-ea+1</version>
+            <type>jar</type>
+        </dependency>
     </dependencies>
 
 </project>

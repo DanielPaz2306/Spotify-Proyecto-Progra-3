@@ -4,19 +4,19 @@
  */
 package com.spotify;
 
-import java.awt.CardLayout;
-import java.awt.Color;
+
 import java.io.File;
 import javax.swing.JFileChooser;
 import com.estructuras.ArbolBinario;
 import com.estructuras.Cancion;
+import com.estructuras.ListaDobleEnlazadaCircular;
+import com.utilidades.Reproductor;
 import java.awt.Component;
 import javax.swing.DefaultListCellRenderer;
 import javax.swing.DefaultListModel;
 import javax.swing.JList;
 import javax.swing.JOptionPane;
-import javax.swing.ListCellRenderer;
-import javax.swing.ListModel;
+
 
 
 /**
@@ -26,16 +26,15 @@ import javax.swing.ListModel;
 public class Inicio extends javax.swing.JFrame {
     
     DefaultListModel<Cancion> modeloLista = new DefaultListModel<>();
+    Reproductor reproductor = new Reproductor();
     
-    
-    
+    ListaDobleEnlazadaCircular lista = new ListaDobleEnlazadaCircular();
+
     private static final java.util.logging.Logger logger = java.util.logging.Logger.getLogger(Inicio.class.getName());
 
 
-    /**
-     * Creates new form Inicio
-     */
     public Inicio() {
+        
         initComponents();
         listadoCanciones.setModel(modeloLista);
         
@@ -45,14 +44,27 @@ public class Inicio extends javax.swing.JFrame {
                 int index, boolean isSelected, boolean cellHasFocus) {
 
                     super.getListCellRendererComponent(list, value, index, isSelected, cellHasFocus);
-
                     Cancion c = (Cancion) value;
                     setText(c.nombre + " — " + c.artista +  " (" + c.duracionReal + ")");
 
                     return this;
                 }
         });
-        
+        listadoCanciones.addMouseListener(new java.awt.event.MouseAdapter() {
+            @Override
+            public void mouseClicked(java.awt.event.MouseEvent evt) {
+                if (evt.getClickCount() == 2) {
+                    Cancion seleccionada = listadoCanciones.getSelectedValue();
+                    if (seleccionada != null) {
+                        reproductor.detener();
+                        reproductor.reproducir(seleccionada, lista); 
+                    }
+                    else{
+                        JOptionPane.showMessageDialog(null, "No has seleccionado ninguna cancion", "ADVERTENCIA", JOptionPane.WARNING_MESSAGE);
+                    }
+                }
+            }
+        });
     }
 
     /**
@@ -72,6 +84,11 @@ public class Inicio extends javax.swing.JFrame {
         listadoCanciones = new javax.swing.JList<>();
         txtBuscar = new javax.swing.JTextField();
         btnBuscar = new javax.swing.JButton();
+        playButton = new javax.swing.JButton();
+        anteriorButton = new javax.swing.JButton();
+        siguienteButton = new javax.swing.JButton();
+        arbolTxt = new javax.swing.JLabel();
+        listaTxt = new javax.swing.JLabel();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
 
@@ -124,6 +141,45 @@ public class Inicio extends javax.swing.JFrame {
         });
         jPanel1.add(btnBuscar, new org.netbeans.lib.awtextra.AbsoluteConstraints(280, 100, 90, -1));
 
+        playButton.setBackground(new java.awt.Color(204, 204, 204));
+        playButton.setFont(new java.awt.Font("Gontserrat", 0, 12)); // NOI18N
+        playButton.setForeground(new java.awt.Color(0, 0, 0));
+        playButton.setText("Play/Pause");
+        playButton.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                playButtonActionPerformed(evt);
+            }
+        });
+        jPanel1.add(playButton, new org.netbeans.lib.awtextra.AbsoluteConstraints(150, 660, -1, -1));
+
+        anteriorButton.setBackground(new java.awt.Color(204, 204, 204));
+        anteriorButton.setFont(new java.awt.Font("Gontserrat", 0, 12)); // NOI18N
+        anteriorButton.setForeground(new java.awt.Color(0, 0, 0));
+        anteriorButton.setText("Anterior");
+        anteriorButton.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                anteriorButtonActionPerformed(evt);
+            }
+        });
+        jPanel1.add(anteriorButton, new org.netbeans.lib.awtextra.AbsoluteConstraints(40, 660, -1, -1));
+
+        siguienteButton.setBackground(new java.awt.Color(204, 204, 204));
+        siguienteButton.setFont(new java.awt.Font("Gontserrat", 0, 12)); // NOI18N
+        siguienteButton.setForeground(new java.awt.Color(0, 0, 0));
+        siguienteButton.setText("Siguiente");
+        siguienteButton.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                siguienteButtonActionPerformed(evt);
+            }
+        });
+        jPanel1.add(siguienteButton, new org.netbeans.lib.awtextra.AbsoluteConstraints(280, 660, -1, -1));
+
+        arbolTxt.setText("Arbol: ");
+        jPanel1.add(arbolTxt, new org.netbeans.lib.awtextra.AbsoluteConstraints(30, 80, -1, -1));
+
+        listaTxt.setText("Lista:");
+        jPanel1.add(listaTxt, new org.netbeans.lib.awtextra.AbsoluteConstraints(100, 80, -1, -1));
+
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
         getContentPane().setLayout(layout);
         layout.setHorizontalGroup(
@@ -148,24 +204,61 @@ public class Inicio extends javax.swing.JFrame {
 
     private void agregarButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_agregarButtonActionPerformed
         JFileChooser chooser = new JFileChooser();
+            chooser.setFileSelectionMode(JFileChooser.DIRECTORIES_ONLY);
+            int resultado = chooser.showOpenDialog(null);
+            if (resultado == JFileChooser.APPROVE_OPTION) {
+                File carpeta = chooser.getSelectedFile();
 
-        chooser.setFileSelectionMode(JFileChooser.DIRECTORIES_ONLY);
+                ArbolBinario arbol = ArbolBinario.getInstancia();
+                arbol.raiz = null;      //LIMPIAMOS EL ARBOL ANTES DE VOLVER A CARGAR
+                lista.limpiarLista();
+                lista.contador = 0;
+                arbol.cantidad = 0;     // Y LA CANTIDAD TAMBIEN
 
-                int resultado = chooser.showOpenDialog(null);
-        if (resultado == JFileChooser.APPROVE_OPTION) {
 
-                    File carpeta = chooser.getSelectedFile();
-                    ArbolBinario arbol = ArbolBinario.getInstancia();
-                    arbol.cargarCarpeta(carpeta.getAbsolutePath());
-                    arbol.inOrderALista(arbol.raiz, modeloLista);
-                    JOptionPane.showMessageDialog(this, "Canciones agregadas correctamente");
-                    
-        }
+                
+                arbol.cargarCarpeta(carpeta.getAbsolutePath());
+                arbol.inOrderAListaDoble(arbol.raiz, lista);
+
+                modeloLista.clear();    // LIMPIAMOS LA LISTA
+                arbol.inOrderALista(arbol.raiz, modeloLista);
+
+                arbolTxt.setText("Arbol: " + arbol.cantidad);
+                listaTxt.setText("Lista: " + lista.contador); 
+                
+                JOptionPane.showMessageDialog(this, "Canciones agregadas: " + arbol.cantidad);
+            }
     }//GEN-LAST:event_agregarButtonActionPerformed
 
     private void btnBuscarActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnBuscarActionPerformed
        buscarCancion(txtBuscar.getText());
     }//GEN-LAST:event_btnBuscarActionPerformed
+
+    private void playButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_playButtonActionPerformed
+        
+        if(reproductor.estaReproduciendo() == true){
+            reproductor.pausar();
+        }    
+        else{
+            reproductor.reanudar();
+        }
+    }//GEN-LAST:event_playButtonActionPerformed
+
+    private void siguienteButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_siguienteButtonActionPerformed
+
+        Cancion actual = reproductor.getCancionActual();
+        Cancion siguiente = lista.buscarSiguiente(actual.ruta);
+        buscarCancion(siguiente.nombre);
+        reproductor.siguienteCancion();
+    }//GEN-LAST:event_siguienteButtonActionPerformed
+
+    private void anteriorButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_anteriorButtonActionPerformed
+        Cancion actual = reproductor.getCancionActual();
+        Cancion anterior = lista.buscarAnterior(actual.ruta);
+        buscarCancion(anterior.nombre);
+        reproductor.reproducir(anterior.ruta);
+    }//GEN-LAST:event_anteriorButtonActionPerformed
+
 
     /**
      * @param args the command line arguments
@@ -195,11 +288,16 @@ public class Inicio extends javax.swing.JFrame {
     
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JButton agregarButton;
+    private javax.swing.JButton anteriorButton;
+    private javax.swing.JLabel arbolTxt;
     private javax.swing.JButton btnBuscar;
     private javax.swing.JPanel jPanel1;
     private javax.swing.JScrollPane jScrollPane1;
+    private javax.swing.JLabel listaTxt;
     private javax.swing.JList<Cancion> listadoCanciones;
+    private javax.swing.JButton playButton;
     private javax.swing.JButton playlistButton;
+    private javax.swing.JButton siguienteButton;
     private javax.swing.JLabel spotifyLabel;
     private javax.swing.JTextField txtBuscar;
     // End of variables declaration//GEN-END:variables
@@ -213,7 +311,7 @@ public class Inicio extends javax.swing.JFrame {
             
             Cancion c = modeloLista.getElementAt(i);
 
-            if (c.nombre.equalsIgnoreCase(textoBusqueda) || c.artista.equalsIgnoreCase(textoBusqueda)) {
+            if (c.nombre.toLowerCase().contains(textoBusqueda.toLowerCase()) || c.artista.toLowerCase().contains(textoBusqueda.toLowerCase())) {
 
                 listadoCanciones.setSelectedIndex(i);      //lo selecciona
                 listadoCanciones.ensureIndexIsVisible(i);   // desplaza la lista hasta ahi
