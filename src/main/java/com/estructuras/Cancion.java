@@ -36,8 +36,9 @@ public class Cancion {
         this.artista = artista;
         this.album = album;
         this.genero = genero;
-        int m = duracion / 60;
-        int s = duracion % 60;
+        this.duracionSeg = duracion;
+        int m = duracionSeg / 60;
+        int s = duracionSeg % 60;
         this.duracionReal = m + "m " + s + "seg";
         this.tamaño = tamaño;
         this.ruta = ruta;
@@ -53,8 +54,9 @@ public class Cancion {
         this.artista = artista;
         this.album = album;
         this.genero = genero;
-        int m = duracion / 60;
-        int s = duracion % 60;
+        this.duracionSeg = duracion;
+        int m = duracionSeg / 60;
+        int s = duracionSeg % 60;
         this.duracionReal = m + "m " + s + "seg";
         this.tamaño = tamaño;
         this.ruta = ruta;
@@ -63,5 +65,12 @@ public class Cancion {
         this.siguiente = siguiente;
         this.anterior = anterior;
     }
+
+    @Override
+    public String toString() {
+        return nombre + " - " + artista + " - " + " (" + duracionReal + ")";
+    }
+    
+    
     
 }

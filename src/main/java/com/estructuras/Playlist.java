@@ -8,13 +8,20 @@ import org.jaudiotagger.audio.AudioHeader;
 import org.jaudiotagger.tag.FieldKey;
 import org.jaudiotagger.tag.Tag;
 
-public class ListaDobleEnlazadaCircular {
+public class Playlist {
 
+    public String nombre;
     public Cancion inicio;
     public Cancion fin;
     public int contador;
 
-    public ListaDobleEnlazadaCircular() {
+    public Playlist() {
+        inicio = fin = null;
+        contador = 0;
+    }
+    
+    public Playlist(String nombre) {
+        this.nombre = nombre;
         inicio = fin = null;
         contador = 0;
     }
@@ -24,7 +31,29 @@ public class ListaDobleEnlazadaCircular {
     }
 
     public void Insertar(String nombre, String artista, String album, String genero, int duracion, long tamaño, String ruta, String año){
-        Cancion nuevo = new Cancion(nombre, artista, album, genero, duracion, tamaño, ruta, año, null, null);
+        
+        Cancion nuevo = new Cancion(nombre, artista, album, genero, duracion, tamaño, ruta, año);
+        
+        if(EstaVacia()){
+            inicio = fin = nuevo;
+            nuevo.siguiente = nuevo;
+            nuevo.anterior = nuevo;
+        }
+        
+        else{
+            nuevo.siguiente = inicio;
+            nuevo.anterior = fin;
+            inicio.anterior = nuevo;
+            fin.siguiente = nuevo;
+            fin = nuevo;
+        }
+        
+        contador ++;
+    }
+    
+    public void Insertar(Cancion cancion){
+            
+        Cancion nuevo = cancion;
         
         if(EstaVacia()){
             inicio = fin = nuevo;
@@ -51,18 +80,26 @@ public class ListaDobleEnlazadaCircular {
         return actual.anterior;
     }
     
-    public void eliminar(Cancion c) {
-        if (EstaVacia()) return;
+    public boolean eliminar(Cancion c) {
+        if (EstaVacia()) return false;
 
         c.anterior.siguiente = c.siguiente;
+        
         c.siguiente.anterior = c.anterior;
 
         if (c == inicio) inicio = c.siguiente;
+        
         if (c == fin) fin = c.anterior;
+        
         if (inicio == c) inicio = fin = null; // era el único
+        
         fin.siguiente = inicio;
+        
         inicio.anterior = fin;
+        
         contador--;
+        
+        return true;
     }
 
     public void insertarDesdeCarpeta(String rutaCarpeta){
@@ -129,7 +166,6 @@ public class ListaDobleEnlazadaCircular {
         }
     }
     
-
     public Cancion buscarSiguiente(String ruta) {
        if (EstaVacia()) return null;
 
@@ -164,8 +200,32 @@ public class ListaDobleEnlazadaCircular {
         return null;
     }
     
+    public boolean existe(Cancion cancion){
+        if(EstaVacia()) return false;
+        
+        Cancion temp = inicio;
+        
+        do {
+            if(temp.ruta.equals(cancion.ruta)){
+                return true;
+            }
+            temp = temp.siguiente;
+        }
+        
+        while (temp != inicio);
+        
+        return false;
+    }
+    
     public void limpiarLista(){
         inicio = fin = null;
     }
+
+    @Override
+    public String toString() {
+        return nombre + " - Canciones: " + contador ;
+    }
+    
+    
     
 }

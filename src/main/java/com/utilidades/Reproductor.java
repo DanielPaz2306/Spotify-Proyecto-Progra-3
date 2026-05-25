@@ -1,7 +1,7 @@
 package com.utilidades;
 
 import com.estructuras.Cancion;
-import com.estructuras.ListaDobleEnlazadaCircular;
+import com.estructuras.Playlist;
 import java.io.File;
 
 import javafx.embed.swing.JFXPanel;
@@ -25,7 +25,7 @@ public class Reproductor {
         new JFXPanel();
     }
 
-    public void reproducir(Cancion cancion, ListaDobleEnlazadaCircular lista) {
+    public void reproducir(Cancion cancion, Playlist lista) {
 
         detener();
         Media media = new Media(new File(cancion.ruta).toURI().toString());
@@ -113,7 +113,8 @@ public class Reproductor {
             }
                 return null;
         }
-    public void siguienteCancion(ListaDobleEnlazadaCircular lista) {
+    
+    public void siguienteCancion(Playlist lista) {
         if (cancionActual == null || lista == null) return;
 
         Cancion actual = lista.inicio;
@@ -126,16 +127,16 @@ public class Reproductor {
         } while (actual != lista.inicio);
     }
     
-    public void anteriorCancion(ListaDobleEnlazadaCircular lista) {
+    public void anteriorCancion(Playlist lista) {
         if (cancionActual == null || lista == null) return;
 
         Cancion actual = lista.inicio;
         do {
             if (actual.ruta.equals(cancionActual.ruta)) {
-                reproducir(actual.siguiente, lista);
+                reproducir(actual.anterior, lista);
                 return;
             }
-            actual = actual.siguiente;
+            actual = actual.anterior;
         } while (actual != lista.inicio);
     }
 }

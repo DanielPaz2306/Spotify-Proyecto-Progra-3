@@ -9,48 +9,43 @@ import java.io.File;
 import javax.swing.JFileChooser;
 import com.estructuras.ArbolBinario;
 import com.estructuras.Cancion;
-import com.estructuras.ListaDobleEnlazadaCircular;
+import com.estructuras.Playlist;
+import com.frames.CrearPlaylist;
+import com.frames.EditarPlaylist;
 import com.utilidades.Reproductor;
-import java.awt.Component;
-import javax.swing.DefaultListCellRenderer;
+import java.util.List;
+import java.util.ArrayList;
 import javax.swing.DefaultListModel;
-import javax.swing.JList;
 import javax.swing.JOptionPane;
 
 
 
-/**
- *
- * @author pchin
- */
+
 public class Inicio extends javax.swing.JFrame {
     
-    DefaultListModel<Cancion> modeloLista = new DefaultListModel<>();
+    
+    public ArrayList<Playlist> playlists = new ArrayList();
+    
+    public DefaultListModel<Cancion> modeloListaCanciones = new DefaultListModel<>();
+    public DefaultListModel<Playlist> modeloListaPlaylist = new DefaultListModel<>();
+    
+    
     Reproductor reproductor = new Reproductor();
     
-    ListaDobleEnlazadaCircular lista = new ListaDobleEnlazadaCircular();
+    Playlist lista = new Playlist();
 
     private static final java.util.logging.Logger logger = java.util.logging.Logger.getLogger(Inicio.class.getName());
+   
 
 
     public Inicio() {
         
         initComponents();
-        listadoCanciones.setModel(modeloLista);
         
-        listadoCanciones.setCellRenderer(new DefaultListCellRenderer() {
-            @Override
-            public Component getListCellRendererComponent(JList<?> list, Object value,
-                int index, boolean isSelected, boolean cellHasFocus) {
+        
+        listadoCanciones.setModel(modeloListaCanciones);
 
-                    super.getListCellRendererComponent(list, value, index, isSelected, cellHasFocus);
-                    Cancion c = (Cancion) value;
-                    setText(c.nombre + " — " + c.artista +  " (" + c.duracionReal + ")");
-
-                    return this;
-                }
-        });
-        listadoCanciones.addMouseListener(new java.awt.event.MouseAdapter() {
+        listadoCanciones.addMouseListener(new java.awt.event.MouseAdapter() /*PARA CONTROLAR EL DOBLE CLICK EN LA LISTA*/ {
             @Override
             public void mouseClicked(java.awt.event.MouseEvent evt) {
                 if (evt.getClickCount() == 2) {
@@ -64,7 +59,8 @@ public class Inicio extends javax.swing.JFrame {
                     }
                 }
             }
-        });
+        }); 
+        
     }
 
     /**
@@ -88,7 +84,14 @@ public class Inicio extends javax.swing.JFrame {
         anteriorButton = new javax.swing.JButton();
         siguienteButton = new javax.swing.JButton();
         arbolTxt = new javax.swing.JLabel();
-        listaTxt = new javax.swing.JLabel();
+        misplaylistLbl = new javax.swing.JLabel();
+        jScrollPane2 = new javax.swing.JScrollPane();
+        listadoPlaylist = new javax.swing.JList<>();
+        eliminarPlaylistButton = new javax.swing.JButton();
+        reproduccionLbl = new javax.swing.JLabel();
+        playlistEnReproduccionLbl = new javax.swing.JLabel();
+        reproducirButton = new javax.swing.JButton();
+        editarPlaylistButton = new javax.swing.JButton();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
 
@@ -111,18 +114,24 @@ public class Inicio extends javax.swing.JFrame {
         jPanel1.add(agregarButton, new org.netbeans.lib.awtextra.AbsoluteConstraints(30, 20, 130, 30));
 
         playlistButton.setFont(new java.awt.Font("Gontserrat", 0, 12)); // NOI18N
-        playlistButton.setText("Playlist");
+        playlistButton.setForeground(new java.awt.Color(0, 204, 51));
+        playlistButton.setText("Crear Playlist");
         playlistButton.addMouseListener(new java.awt.event.MouseAdapter() {
             public void mouseClicked(java.awt.event.MouseEvent evt) {
                 playlistButtonMouseClicked(evt);
             }
         });
-        jPanel1.add(playlistButton, new org.netbeans.lib.awtextra.AbsoluteConstraints(730, 80, 130, 30));
+        playlistButton.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                playlistButtonActionPerformed(evt);
+            }
+        });
+        jPanel1.add(playlistButton, new org.netbeans.lib.awtextra.AbsoluteConstraints(1000, 140, 130, 30));
 
         listadoCanciones.setBackground(new java.awt.Color(102, 102, 102));
         listadoCanciones.setFont(new java.awt.Font("Gontserrat", 0, 14)); // NOI18N
         listadoCanciones.setForeground(new java.awt.Color(255, 255, 255));
-        listadoCanciones.setModel(modeloLista);
+        listadoCanciones.setModel(modeloListaCanciones);
         listadoCanciones.setCursor(new java.awt.Cursor(java.awt.Cursor.DEFAULT_CURSOR));
         listadoCanciones.setSelectionForeground(new java.awt.Color(51, 51, 51));
         jScrollPane1.setViewportView(listadoCanciones);
@@ -174,11 +183,60 @@ public class Inicio extends javax.swing.JFrame {
         });
         jPanel1.add(siguienteButton, new org.netbeans.lib.awtextra.AbsoluteConstraints(280, 660, -1, -1));
 
+        arbolTxt.setFont(new java.awt.Font("Gontserrat", 0, 12)); // NOI18N
         arbolTxt.setText("Arbol: ");
-        jPanel1.add(arbolTxt, new org.netbeans.lib.awtextra.AbsoluteConstraints(30, 80, -1, -1));
+        jPanel1.add(arbolTxt, new org.netbeans.lib.awtextra.AbsoluteConstraints(10, 840, -1, -1));
 
-        listaTxt.setText("Lista:");
-        jPanel1.add(listaTxt, new org.netbeans.lib.awtextra.AbsoluteConstraints(100, 80, -1, -1));
+        misplaylistLbl.setFont(new java.awt.Font("Gontserrat", 0, 12)); // NOI18N
+        misplaylistLbl.setText("Mis Playlists:");
+        jPanel1.add(misplaylistLbl, new org.netbeans.lib.awtextra.AbsoluteConstraints(1140, 110, -1, -1));
+
+        listadoPlaylist.setBackground(new java.awt.Color(102, 102, 102));
+        listadoPlaylist.setModel(modeloListaPlaylist);
+        listadoPlaylist.setSelectionMode(javax.swing.ListSelectionModel.SINGLE_SELECTION);
+        jScrollPane2.setViewportView(listadoPlaylist);
+
+        jPanel1.add(jScrollPane2, new org.netbeans.lib.awtextra.AbsoluteConstraints(1140, 140, 160, 510));
+
+        eliminarPlaylistButton.setFont(new java.awt.Font("Gontserrat", 0, 12)); // NOI18N
+        eliminarPlaylistButton.setForeground(new java.awt.Color(255, 153, 153));
+        eliminarPlaylistButton.setText("Eliminar Playlist");
+        eliminarPlaylistButton.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                eliminarPlaylistButtonActionPerformed(evt);
+            }
+        });
+        jPanel1.add(eliminarPlaylistButton, new org.netbeans.lib.awtextra.AbsoluteConstraints(1000, 190, 130, 30));
+
+        reproduccionLbl.setFont(new java.awt.Font("Gontserrat SemiBold", 0, 18)); // NOI18N
+        reproduccionLbl.setForeground(new java.awt.Color(0, 204, 51));
+        reproduccionLbl.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
+        reproduccionLbl.setText("Reproducción: ");
+        jPanel1.add(reproduccionLbl, new org.netbeans.lib.awtextra.AbsoluteConstraints(30, 60, 150, 30));
+
+        playlistEnReproduccionLbl.setFont(new java.awt.Font("Gontserrat", 2, 18)); // NOI18N
+        playlistEnReproduccionLbl.setForeground(new java.awt.Color(255, 255, 255));
+        jPanel1.add(playlistEnReproduccionLbl, new org.netbeans.lib.awtextra.AbsoluteConstraints(190, 66, 170, 20));
+
+        reproducirButton.setFont(new java.awt.Font("Gontserrat", 0, 12)); // NOI18N
+        reproducirButton.setForeground(new java.awt.Color(255, 255, 0));
+        reproducirButton.setText("Reproducir");
+        reproducirButton.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                reproducirButtonActionPerformed(evt);
+            }
+        });
+        jPanel1.add(reproducirButton, new org.netbeans.lib.awtextra.AbsoluteConstraints(1000, 240, 130, 30));
+
+        editarPlaylistButton.setFont(new java.awt.Font("Gontserrat", 0, 12)); // NOI18N
+        editarPlaylistButton.setForeground(new java.awt.Color(255, 255, 0));
+        editarPlaylistButton.setText("Editar");
+        editarPlaylistButton.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                editarPlaylistButtonActionPerformed(evt);
+            }
+        });
+        jPanel1.add(editarPlaylistButton, new org.netbeans.lib.awtextra.AbsoluteConstraints(1000, 290, 130, 30));
 
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
         getContentPane().setLayout(layout);
@@ -203,31 +261,7 @@ public class Inicio extends javax.swing.JFrame {
     }//GEN-LAST:event_playlistButtonMouseClicked
 
     private void agregarButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_agregarButtonActionPerformed
-        JFileChooser chooser = new JFileChooser();
-            chooser.setFileSelectionMode(JFileChooser.DIRECTORIES_ONLY);
-            int resultado = chooser.showOpenDialog(null);
-            if (resultado == JFileChooser.APPROVE_OPTION) {
-                File carpeta = chooser.getSelectedFile();
-
-                ArbolBinario arbol = ArbolBinario.getInstancia();
-                arbol.raiz = null;      //LIMPIAMOS EL ARBOL ANTES DE VOLVER A CARGAR
-                lista.limpiarLista();
-                lista.contador = 0;
-                arbol.cantidad = 0;     // Y LA CANTIDAD TAMBIEN
-
-
-                
-                arbol.cargarCarpeta(carpeta.getAbsolutePath());
-                arbol.inOrderAListaDoble(arbol.raiz, lista);
-
-                modeloLista.clear();    // LIMPIAMOS LA LISTA
-                arbol.inOrderALista(arbol.raiz, modeloLista);
-
-                arbolTxt.setText("Arbol: " + arbol.cantidad);
-                listaTxt.setText("Lista: " + lista.contador); 
-                
-                JOptionPane.showMessageDialog(this, "Canciones agregadas: " + arbol.cantidad);
-            }
+            cargarCanciones();
     }//GEN-LAST:event_agregarButtonActionPerformed
 
     private void btnBuscarActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnBuscarActionPerformed
@@ -249,15 +283,64 @@ public class Inicio extends javax.swing.JFrame {
         Cancion actual = reproductor.getCancionActual();
         Cancion siguiente = lista.buscarSiguiente(actual.ruta);
         buscarCancion(siguiente.nombre);
-        reproductor.siguienteCancion();
+        reproductor.siguienteCancion(lista);
     }//GEN-LAST:event_siguienteButtonActionPerformed
 
     private void anteriorButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_anteriorButtonActionPerformed
         Cancion actual = reproductor.getCancionActual();
-        Cancion anterior = lista.buscarAnterior(actual.ruta);
+        Cancion anterior = lista.buscarAnterior(actual.ruta); //ME SIRVE PARA BUSCAR LA CANCION ANTERIOR DE LA ACTUAL Y SELECCIONARLA EN EL JLIST
         buscarCancion(anterior.nombre);
-        reproductor.reproducir(anterior.ruta);
+        reproductor.anteriorCancion(lista);
     }//GEN-LAST:event_anteriorButtonActionPerformed
+
+    private void playlistButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_playlistButtonActionPerformed
+        CrearPlaylist c = new CrearPlaylist(this);
+        c.setAlwaysOnTop(true);
+        c.setDefaultCloseOperation(DISPOSE_ON_CLOSE);
+        c.setVisible(true);
+    }//GEN-LAST:event_playlistButtonActionPerformed
+
+    private void eliminarPlaylistButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_eliminarPlaylistButtonActionPerformed
+        Playlist eliminar = listadoPlaylist.getSelectedValue();
+        
+        if(eliminar == null) {
+            JOptionPane.showMessageDialog(null, "SELECCIONE LA PLAYLIST A ELIMINAR", "ADVERTENCIAD", JOptionPane.WARNING_MESSAGE);
+            return;
+        }
+        
+        if(playlists.remove(eliminar) == true && modeloListaPlaylist.removeElement(eliminar) == true){
+            JOptionPane.showMessageDialog(null, "Playlist eliminada correctamente");
+        }
+    }//GEN-LAST:event_eliminarPlaylistButtonActionPerformed
+
+    private void reproducirButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_reproducirButtonActionPerformed
+        Playlist seleccionada = listadoPlaylist.getSelectedValue();
+        
+        if(seleccionada == null) {
+            JOptionPane.showMessageDialog(null, "SELECCIONE LA PLAYLIST A REPRODUCIR", "ADVERTENCIAD", JOptionPane.WARNING_MESSAGE);
+            return;
+        }
+        
+        cargarPlaylistEnModelo(seleccionada, modeloListaCanciones);
+        
+        reproductor.reproducir(seleccionada.inicio, seleccionada);
+        playlistEnReproduccionLbl.setText(seleccionada.nombre);
+        
+    }//GEN-LAST:event_reproducirButtonActionPerformed
+
+    private void editarPlaylistButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_editarPlaylistButtonActionPerformed
+        Playlist seleccionada = listadoPlaylist.getSelectedValue();
+        
+        if(seleccionada == null) {
+            JOptionPane.showMessageDialog(null, "SELECCIONE LA PLAYLIST A EDITAR", "ADVERTENCIA", JOptionPane.WARNING_MESSAGE);
+            return;
+        }
+        
+        EditarPlaylist e = new EditarPlaylist(this);
+        e.setAlwaysOnTop(true);
+        e.setDefaultCloseOperation(DISPOSE_ON_CLOSE);
+        e.setVisible(true);
+    }//GEN-LAST:event_editarPlaylistButtonActionPerformed
 
 
     /**
@@ -291,12 +374,19 @@ public class Inicio extends javax.swing.JFrame {
     private javax.swing.JButton anteriorButton;
     private javax.swing.JLabel arbolTxt;
     private javax.swing.JButton btnBuscar;
+    private javax.swing.JButton editarPlaylistButton;
+    private javax.swing.JButton eliminarPlaylistButton;
     private javax.swing.JPanel jPanel1;
     private javax.swing.JScrollPane jScrollPane1;
-    private javax.swing.JLabel listaTxt;
+    private javax.swing.JScrollPane jScrollPane2;
     private javax.swing.JList<Cancion> listadoCanciones;
+    public javax.swing.JList<Playlist> listadoPlaylist;
+    private javax.swing.JLabel misplaylistLbl;
     private javax.swing.JButton playButton;
     private javax.swing.JButton playlistButton;
+    private javax.swing.JLabel playlistEnReproduccionLbl;
+    private javax.swing.JLabel reproduccionLbl;
+    private javax.swing.JButton reproducirButton;
     private javax.swing.JButton siguienteButton;
     private javax.swing.JLabel spotifyLabel;
     private javax.swing.JTextField txtBuscar;
@@ -307,14 +397,14 @@ public class Inicio extends javax.swing.JFrame {
             return;
         }
 
-        for (int i = 0; i < modeloLista.getSize(); i++) {
+        for (int i = 0; i < modeloListaCanciones.getSize(); i++) {
             
-            Cancion c = modeloLista.getElementAt(i);
+            Cancion c = modeloListaCanciones.getElementAt(i);
 
             if (c.nombre.toLowerCase().contains(textoBusqueda.toLowerCase()) || c.artista.toLowerCase().contains(textoBusqueda.toLowerCase())) {
 
-                listadoCanciones.setSelectedIndex(i);      //lo selecciona
-                listadoCanciones.ensureIndexIsVisible(i);   // desplaza la lista hasta ahi
+                listadoCanciones.setSelectedIndex(i);     
+                listadoCanciones.ensureIndexIsVisible(i);   
                 return;
             }
         }
@@ -322,4 +412,79 @@ public class Inicio extends javax.swing.JFrame {
         javax.swing.JOptionPane.showMessageDialog(this, "Canción no encontrada", "Búsqueda", javax.swing.JOptionPane.INFORMATION_MESSAGE);
     }
 
+    
+    private void cargarCanciones(){
+            JFileChooser chooser = new JFileChooser();
+            chooser.setFileSelectionMode(JFileChooser.DIRECTORIES_ONLY);
+            int resultado = chooser.showOpenDialog(null);
+            if (resultado == JFileChooser.APPROVE_OPTION) {
+                File carpeta = chooser.getSelectedFile();
+
+                ArbolBinario arbol = ArbolBinario.getInstancia();
+                arbol.raiz = null;      //LIMPIAMOS EL ARBOL ANTES DE VOLVER A CARGAR
+                lista.limpiarLista();
+                lista.contador = 0;
+                arbol.cantidad = 0;     // Y LA CANTIDAD TAMBIEN
+
+
+                long iArbolBB = System.nanoTime();
+                arbol.cargarConSub(carpeta.getAbsolutePath()); //CARGA ARBOL
+                long fArbolBB = System.nanoTime();
+                
+                long tiempoNano = fArbolBB - iArbolBB;
+                
+                double tiempoArbolBB =  tiempoNano / 1_000_0000.0;
+                
+                arbol.inOrderAListaDoble(arbol.raiz, lista); //CARGA PLAYLIST GENERAL
+                
+                lista.nombre = "GENERAL";
+                
+                
+                playlists.add(lista);
+
+                modeloListaPlaylist.clear();
+                modeloListaCanciones.clear();    // LIMPIAMOS EL MODELO DEL HJSLIT
+                
+                modeloListaPlaylist.addElement(lista);
+                arbol.inOrderALista(arbol.raiz, modeloListaCanciones); //CARGA AL JLIST
+
+                arbolTxt.setText("Arbol: " + arbol.cantidad + " en " + tiempoArbolBB + " ms");
+                
+                JOptionPane.showMessageDialog(this, "Canciones agregadas: " + arbol.cantidad);
+            }
+    }
+    
+    
+    public void crearPlayList(String nombre, List<Cancion> canciones){
+        Playlist nueva = new Playlist(nombre);
+        
+        for(Cancion c : canciones){
+            nueva.Insertar(c.nombre, c.artista, c.album, c.genero, c.duracionSeg, c.tamaño, c.ruta, c.año);
+        }
+        
+        JOptionPane.showMessageDialog(null, "Playlist " + nueva.nombre + " creada correctamente con " + nueva.contador + " canciones", "PlayList", JOptionPane.INFORMATION_MESSAGE);
+        playlists.add(nueva);
+        modeloListaPlaylist.addElement(nueva);
+       
+    }
+    
+    public void cargarPlaylistEnModelo(Playlist playlist, DefaultListModel<Cancion> modelo){
+        if(modelo != null){
+            modelo.clear();
+        }
+        
+        if(playlist == null || playlist.inicio == null){
+            JOptionPane.showMessageDialog(null, "La playlist no puede estar vacia", "ADVERTENCIA", JOptionPane.WARNING_MESSAGE);
+            return;
+        }
+        
+        Cancion actual = playlist.inicio;
+        
+        do{
+            modelo.addElement(actual);
+            actual = actual.siguiente;
+        }
+        while(actual != playlist.inicio);
+    }
+    
 }

@@ -17,7 +17,9 @@ import javax.swing.DefaultListModel;
  * @author pchin
  */
 public class ArbolBinario {
+    
     public Cancion raiz;
+    
     private static ArbolBinario instancia;
     
     public int cantidad;
@@ -49,6 +51,7 @@ public class ArbolBinario {
             cantidad++;
             return new Cancion(nombre, artista, album, genero, duracion, tamaño, ruta, año);
         }
+        
         int cmp = nombre.compareToIgnoreCase(actual.nombre);
         
         if(cmp < 0){
@@ -120,10 +123,11 @@ public class ArbolBinario {
     
         try {
         File archivo = new File(ruta);
-        AudioFile audioFile = AudioFileIO.read(archivo);
+        AudioFile audioFile = AudioFileIO.read(archivo); //OBTENEMOS EL ARCHIVO DE AUDIO COMO OBJETO
 
-        Tag tag          = audioFile.getTag();
-        AudioHeader header = audioFile.getAudioHeader();
+        Tag tag          = audioFile.getTag(); //obtenemos sus meta
+        
+        AudioHeader header = audioFile.getAudioHeader(); //obtiene info extra como duracion frecuencia y otras mamadas
         
         
         String nombre = tag.getFirst(FieldKey.TITLE);
@@ -150,8 +154,6 @@ public class ArbolBinario {
         int duracion   = header.getTrackLength();
         long tamaño    = archivo.length();
         
-
-
         this.insertar(nombre, artista, album, genero, duracion, tamaño, ruta, año);
         
     } catch (Exception e) {
@@ -211,7 +213,7 @@ public class ArbolBinario {
         inOrderALista(cancion.derecha, modelo);
     }
     
-    public void inOrderAListaDoble(Cancion cancion, ListaDobleEnlazadaCircular lista) {
+    public void inOrderAListaDoble(Cancion cancion, Playlist lista) {
         if (cancion == null) return;
 
         inOrderAListaDoble(cancion.izquierda, lista);
@@ -231,5 +233,35 @@ public class ArbolBinario {
         inOrderAListaDoble(cancion.derecha, lista);
     }
 
+    public void cargarConSub(String rutaCarpeta) {
+        File carpeta = new File(rutaCarpeta);
+
+        if (!carpeta.exists() || !carpeta.isDirectory()) return;
+
+        File[] contenido = carpeta.listFiles();
+        if (contenido == null) return;
+
+        for (File archivo : contenido) {
+            if (archivo.isDirectory()) {
+                cargarConSub(archivo.getAbsolutePath());
+            } else if (esAudio(archivo.getName())) {
+                try {
+                    insertarDesdeArchivo(archivo.getAbsolutePath());
+                    System.out.println("CARGADA " + archivo.getName());
+                } catch (Exception e) {
+                    System.out.println("NO CARGADA " + archivo.getName());
+                }
+            }
+        }
+    }
+
+    private boolean esAudio(String nombre) {
+        String n = nombre.toLowerCase();
+        return n.endsWith(".mp3")  ||
+               n.endsWith(".flac") ||
+               n.endsWith(".m4a")  ||
+               n.endsWith(".ogg")  ||
+               n.endsWith(".wav");
+    }
 
 }
