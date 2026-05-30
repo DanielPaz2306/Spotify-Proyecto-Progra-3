@@ -10,6 +10,8 @@ import com.estructuras.Playlist;
 import com.spotify.Inicio;
 import javax.swing.DefaultListModel;
 import javax.swing.JOptionPane;
+import java.util.List;
+import java.util.ArrayList;
 
 /**
  *
@@ -29,7 +31,11 @@ public class AgregarCanciones extends javax.swing.JFrame {
         this.inicio = inicio;
         this.playlist = editando.playlistEditar;
         ArbolBinario a = ArbolBinario.getInstancia();
-        a.inOrderALista(a.raiz, modeloLista);
+        List<Cancion> temp = new ArrayList<>();
+        a.inOrderALista(a.raiz, temp);
+        for(Cancion c : temp) {
+            modeloLista.addElement(c);
+        }
         initComponents();
     }
 
@@ -159,6 +165,7 @@ public class AgregarCanciones extends javax.swing.JFrame {
         }
         else{
             playlist.Insertar(seleccionada);
+            editando.modeloListado.addElement(seleccionada);
             modeloLista.removeElement(seleccionada);
         }
 

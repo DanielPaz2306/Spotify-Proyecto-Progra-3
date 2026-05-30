@@ -1,7 +1,6 @@
 package com.estructuras;
 
 import java.io.File;
-import javax.swing.JOptionPane;
 import org.jaudiotagger.audio.AudioFile;
 import org.jaudiotagger.audio.AudioFileIO;
 import org.jaudiotagger.audio.AudioHeader;
@@ -109,7 +108,7 @@ public class Playlist {
         File carpeta = new File(rutaCarpeta);
 
         if (!carpeta.exists() || !carpeta.isDirectory()) {
-            JOptionPane.showMessageDialog(null, "La Carpeta no EXISTE");
+            System.out.println("La Carpeta no EXISTE");
             return;
         }
         

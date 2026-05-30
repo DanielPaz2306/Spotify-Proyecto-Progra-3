@@ -242,11 +242,11 @@
             <Property name="font" type="java.awt.Font" editor="org.netbeans.beaninfo.editors.FontEditor">
               <Font name="Gontserrat" size="12" style="0"/>
             </Property>
-            <Property name="text" type="java.lang.String" value="Arbol: "/>
+            <Property name="text" type="java.lang.String" value="Tiempos: "/>
           </Properties>
           <Constraints>
             <Constraint layoutClass="org.netbeans.modules.form.compat2.layouts.DesignAbsoluteLayout" value="org.netbeans.modules.form.compat2.layouts.DesignAbsoluteLayout$AbsoluteConstraintsDescription">
-              <AbsoluteConstraints x="10" y="840" width="-1" height="-1"/>
+              <AbsoluteConstraints x="10" y="690" width="-1" height="-1"/>
             </Constraint>
           </Constraints>
         </Component>

@@ -10,7 +10,7 @@ import org.jaudiotagger.audio.AudioHeader;
 import org.jaudiotagger.tag.Tag;
 import org.jaudiotagger.tag.FieldKey;
 import java.io.File;
-import javax.swing.DefaultListModel;
+import java.util.List;
 
 /**
  *
@@ -206,11 +206,11 @@ public class ArbolBinario {
         return raiz;
     }
     
-    public void inOrderALista(Cancion cancion, DefaultListModel<Cancion> modelo) {
+    public void inOrderALista(Cancion cancion, List<Cancion> lista) {
         if (cancion == null) return;
-        inOrderALista(cancion.izquierda, modelo);
-        modelo.addElement(cancion);
-        inOrderALista(cancion.derecha, modelo);
+        inOrderALista(cancion.izquierda, lista);
+        lista.add(cancion);
+        inOrderALista(cancion.derecha, lista);
     }
     
     public void inOrderAListaDoble(Cancion cancion, Playlist lista) {

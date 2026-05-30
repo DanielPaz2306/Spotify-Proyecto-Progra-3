@@ -5,6 +5,7 @@
 package com.spotify;
 
 
+import com.estructuras.ArbolAVL;
 import java.io.File;
 import javax.swing.JFileChooser;
 import com.estructuras.ArbolBinario;
@@ -28,6 +29,7 @@ public class Inicio extends javax.swing.JFrame {
     
     public DefaultListModel<Cancion> modeloListaCanciones = new DefaultListModel<>();
     public DefaultListModel<Playlist> modeloListaPlaylist = new DefaultListModel<>();
+    public ArbolAVL arbolAvl = ArbolAVL.getInstancia();
     
     
     Reproductor reproductor = new Reproductor();
@@ -184,8 +186,8 @@ public class Inicio extends javax.swing.JFrame {
         jPanel1.add(siguienteButton, new org.netbeans.lib.awtextra.AbsoluteConstraints(280, 660, -1, -1));
 
         arbolTxt.setFont(new java.awt.Font("Gontserrat", 0, 12)); // NOI18N
-        arbolTxt.setText("Arbol: ");
-        jPanel1.add(arbolTxt, new org.netbeans.lib.awtextra.AbsoluteConstraints(10, 840, -1, -1));
+        arbolTxt.setText("Tiempos: ");
+        jPanel1.add(arbolTxt, new org.netbeans.lib.awtextra.AbsoluteConstraints(10, 690, -1, -1));
 
         misplaylistLbl.setFont(new java.awt.Font("Gontserrat", 0, 12)); // NOI18N
         misplaylistLbl.setText("Mis Playlists:");
@@ -265,7 +267,16 @@ public class Inicio extends javax.swing.JFrame {
     }//GEN-LAST:event_agregarButtonActionPerformed
 
     private void btnBuscarActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnBuscarActionPerformed
-       buscarCancion(txtBuscar.getText());
+        long itiempo = System.nanoTime();
+        buscarCancion(txtBuscar.getText());
+        long ftiempo = System.nanoTime();
+        
+        long tiempoNano = ftiempo - itiempo;
+        
+        double tiempoFinal = tiempoNano / 1_000_0000.0;
+        
+        JOptionPane.showMessageDialog(null, "El tiempo de busqueda fue: " + tiempoFinal + " ms");
+        
     }//GEN-LAST:event_btnBuscarActionPerformed
 
     private void playButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_playButtonActionPerformed
@@ -425,13 +436,22 @@ public class Inicio extends javax.swing.JFrame {
                 lista.limpiarLista();
                 lista.contador = 0;
                 arbol.cantidad = 0;     // Y LA CANTIDAD TAMBIEN
-
+                arbolAvl.limpiar();     // LIMPIAMOS EL AVL TAMBIEN
+                
+                long iArbolAVL = System.nanoTime();
+                arbolAvl.insertarDesdeCarpeta(carpeta.getAbsolutePath());
+                long fArbolAVL = System.nanoTime();
+                
+                long tiempoNano = fArbolAVL - iArbolAVL;
+                
+                double tiempoArbolAVL = tiempoNano / 1_000_0000.0;
+                
 
                 long iArbolBB = System.nanoTime();
                 arbol.cargarConSub(carpeta.getAbsolutePath()); //CARGA ARBOL
                 long fArbolBB = System.nanoTime();
                 
-                long tiempoNano = fArbolBB - iArbolBB;
+                tiempoNano = fArbolBB - iArbolBB;
                 
                 double tiempoArbolBB =  tiempoNano / 1_000_0000.0;
                 
@@ -446,9 +466,14 @@ public class Inicio extends javax.swing.JFrame {
                 modeloListaCanciones.clear();    // LIMPIAMOS EL MODELO DEL HJSLIT
                 
                 modeloListaPlaylist.addElement(lista);
-                arbol.inOrderALista(arbol.raiz, modeloListaCanciones); //CARGA AL JLIST
+                List<Cancion> temp = new ArrayList<>();
+                arbol.inOrderALista(arbol.raiz, temp); //CARGA AL JLIST
+                for(Cancion c : temp) {
+                    modeloListaCanciones.addElement(c);
+                }
 
-                arbolTxt.setText("Arbol: " + arbol.cantidad + " en " + tiempoArbolBB + " ms");
+                arbolTxt.setText("ArbolBB: " + arbol.cantidad + " canciones en " + tiempoArbolBB + " ms  |  "
+                        + "ArbolAVL: " + arbolAvl.getContador() + " canciones en " + tiempoArbolAVL + " ms");
                 
                 JOptionPane.showMessageDialog(this, "Canciones agregadas: " + arbol.cantidad);
             }
