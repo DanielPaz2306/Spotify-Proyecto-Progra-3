@@ -14,10 +14,12 @@ import com.estructuras.Playlist;
 import com.frames.CrearPlaylist;
 import com.frames.EditarPlaylist;
 import com.utilidades.Reproductor;
+import java.awt.event.MouseEvent;
 import java.util.List;
 import java.util.ArrayList;
 import javax.swing.DefaultListModel;
 import javax.swing.JOptionPane;
+import javax.swing.SwingUtilities;
 
 
 
@@ -46,11 +48,13 @@ public class Inicio extends javax.swing.JFrame {
         
         
         listadoCanciones.setModel(modeloListaCanciones);
+        
 
         listadoCanciones.addMouseListener(new java.awt.event.MouseAdapter() /*PARA CONTROLAR EL DOBLE CLICK EN LA LISTA*/ {
             @Override
             public void mouseClicked(java.awt.event.MouseEvent evt) {
                 if (evt.getClickCount() == 2) {
+                    
                     Cancion seleccionada = listadoCanciones.getSelectedValue();
                     if (seleccionada != null) {
                         reproductor.detener();
@@ -94,6 +98,7 @@ public class Inicio extends javax.swing.JFrame {
         playlistEnReproduccionLbl = new javax.swing.JLabel();
         reproducirButton = new javax.swing.JButton();
         editarPlaylistButton = new javax.swing.JButton();
+        jButton1 = new javax.swing.JButton();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
 
@@ -103,7 +108,7 @@ public class Inicio extends javax.swing.JFrame {
         spotifyLabel.setFont(new java.awt.Font("Gontserrat SemiBold", 0, 24)); // NOI18N
         spotifyLabel.setForeground(new java.awt.Color(0, 255, 51));
         spotifyLabel.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
-        spotifyLabel.setText("Spotify");
+        spotifyLabel.setText("Sputify");
         jPanel1.add(spotifyLabel, new org.netbeans.lib.awtextra.AbsoluteConstraints(160, 20, 1020, -1));
 
         agregarButton.setFont(new java.awt.Font("Gontserrat", 0, 12)); // NOI18N
@@ -240,6 +245,9 @@ public class Inicio extends javax.swing.JFrame {
         });
         jPanel1.add(editarPlaylistButton, new org.netbeans.lib.awtextra.AbsoluteConstraints(1000, 290, 130, 30));
 
+        jButton1.setText("jButton1");
+        jPanel1.add(jButton1, new org.netbeans.lib.awtextra.AbsoluteConstraints(470, 160, -1, -1));
+
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
         getContentPane().setLayout(layout);
         layout.setHorizontalGroup(
@@ -290,7 +298,9 @@ public class Inicio extends javax.swing.JFrame {
     }//GEN-LAST:event_playButtonActionPerformed
 
     private void siguienteButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_siguienteButtonActionPerformed
-
+        
+        
+        
         Cancion actual = reproductor.getCancionActual();
         Cancion siguiente = lista.buscarSiguiente(actual.ruta);
         buscarCancion(siguiente.nombre);
@@ -387,6 +397,7 @@ public class Inicio extends javax.swing.JFrame {
     private javax.swing.JButton btnBuscar;
     private javax.swing.JButton editarPlaylistButton;
     private javax.swing.JButton eliminarPlaylistButton;
+    private javax.swing.JButton jButton1;
     private javax.swing.JPanel jPanel1;
     private javax.swing.JScrollPane jScrollPane1;
     private javax.swing.JScrollPane jScrollPane2;
