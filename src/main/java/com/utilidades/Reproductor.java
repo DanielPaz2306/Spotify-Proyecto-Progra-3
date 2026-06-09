@@ -3,6 +3,7 @@ package com.utilidades;
 import com.estructuras.Cancion;
 import com.estructuras.Historial;
 import com.estructuras.Playlist;
+import com.estructuras.Cola;
 import java.io.File;
 import java.util.ArrayList;
 import java.util.Random;
@@ -24,6 +25,8 @@ public class Reproductor {
     public Playlist playlistActual = null;
     public int modo = 1; // Default to Normal mode (1)
     private ReproductorListener listener;
+    public Cola cola = new Cola();
+    public Cancion originalPlaylistTrack = null;
 
     public Reproductor() {
 
@@ -37,14 +40,20 @@ public class Reproductor {
     public void setModo(int nuevoModo) {
         this.modo = nuevoModo;
         if (player != null && playlistActual != null) {
-            if(modo == 1) player.setOnEndOfMedia(() -> siguienteNormal(playlistActual));
-            else if(modo == 2) player.setOnEndOfMedia(() -> siguienteAleatoria(playlistActual));
-            else if(modo == 3) player.setOnEndOfMedia(() -> siguienteInfinita(playlistActual));
+            player.setOnEndOfMedia(() -> avanzarSiguiente(playlistActual));
         }
     }
 
     public void reproducir(Cancion cancion, Playlist lista) {
+        originalPlaylistTrack = cancion;
+        reproducirInterno(cancion, lista);
+    }
 
+    public void reproducirDeCola(Cancion cancion, Playlist lista) {
+        reproducirInterno(cancion, lista);
+    }
+
+    private void reproducirInterno(Cancion cancion, Playlist lista) {
         detener();
         Historial historial = Historial.getInstancia();
         historial.Insertar(cancion);
@@ -52,9 +61,7 @@ public class Reproductor {
         player = new MediaPlayer(media);
         cancionActual = cancion;
         playlistActual = lista;
-        if(modo == 1) player.setOnEndOfMedia(() -> siguienteNormal(lista)); //MODO NORMAL
-        else if(modo == 2) player.setOnEndOfMedia(() -> siguienteAleatoria(lista)); //MODO ALEATORIA
-        else if(modo == 3) player.setOnEndOfMedia(() -> siguienteInfinita(lista)); //MODO CIRCULAR
+        player.setOnEndOfMedia(() -> avanzarSiguiente(lista));
         player.play();
 
         if (listener != null) {
@@ -96,7 +103,7 @@ public class Reproductor {
                player.getStatus() == MediaPlayer.Status.PLAYING;
     }
     
-    public Cancion buscarCancion(String ruta) {
+    public static Cancion buscarCancion(String ruta) {
             
                 try {
                 File archivo = new File(ruta);
@@ -140,12 +147,37 @@ public class Reproductor {
                 return null;
         }
     
+    public void avanzarSiguiente(Playlist lista) {
+        if (!cola.estaVacia()) {
+            Cancion sig = cola.desencolar();
+            reproducirDeCola(sig, lista);
+        } else {
+            if (modo == 1) {
+                siguienteNormal(lista);
+            } else if (modo == 2) {
+                siguienteAleatoria(lista);
+            } else if (modo == 3) {
+                siguienteInfinita(lista);
+            }
+        }
+    }
+
+    public void retrocederAnterior(Playlist lista) {
+        if (lista == null || originalPlaylistTrack == null) return;
+        
+        if (modo == 2) {
+            siguienteAleatoria(lista);
+        } else {
+            anteriorCancion(lista);
+        }
+    }
+
     public void siguienteCancion(Playlist lista) {
-        if (cancionActual == null || lista == null) return;
+        if (originalPlaylistTrack == null || lista == null) return;
 
         Cancion actual = lista.inicio;
         do {
-            if (actual.ruta.equals(cancionActual.ruta)) {
+            if (actual.ruta.equalsIgnoreCase(originalPlaylistTrack.ruta)) {
                 
                 if(actual.siguiente == lista.inicio){
                     reproducir(lista.inicio, lista);
@@ -162,11 +194,11 @@ public class Reproductor {
     }
     
     public void anteriorCancion(Playlist lista) {
-        if (cancionActual == null || lista == null) return;
+        if (originalPlaylistTrack == null || lista == null) return;
 
         Cancion actual = lista.inicio;
         do {
-            if (actual.ruta.equals(cancionActual.ruta)) {
+            if (actual.ruta.equalsIgnoreCase(originalPlaylistTrack.ruta)) {
                 if(actual == lista.inicio){
                     reproducir(lista.fin, lista);
                     return;
@@ -182,11 +214,11 @@ public class Reproductor {
     }
 
     public void siguienteNormal(Playlist lista){
-        if (cancionActual == null || lista == null) return;
+        if (originalPlaylistTrack == null || lista == null) return;
 
         Cancion actual = lista.inicio;
         do {
-            if (actual.ruta.equals(cancionActual.ruta)) {
+            if (actual.ruta.equalsIgnoreCase(originalPlaylistTrack.ruta)) {
                 
                 if(actual.siguiente == lista.inicio){
                     detener();
@@ -203,10 +235,10 @@ public class Reproductor {
     }
     
     public void siguienteInfinita(Playlist lista){
-        if (cancionActual == null || lista == null) return;
+        if (originalPlaylistTrack == null || lista == null) return;
         Cancion actual = lista.inicio;
         do {
-            if (actual.ruta.equals(cancionActual.ruta)) {
+            if (actual.ruta.equalsIgnoreCase(originalPlaylistTrack.ruta)) {
                 
                 if(actual.siguiente == lista.inicio){
                     reproducir(lista.inicio, lista);
@@ -241,7 +273,7 @@ public class Reproductor {
         
         int index = -1;
         for (int i = 0; i < listaArray.size(); i++) {
-            if (listaArray.get(i).ruta.equalsIgnoreCase(cancionActual.ruta)) {
+            if (originalPlaylistTrack != null && listaArray.get(i).ruta.equalsIgnoreCase(originalPlaylistTrack.ruta)) {
                 index = i;
                 break;
             }

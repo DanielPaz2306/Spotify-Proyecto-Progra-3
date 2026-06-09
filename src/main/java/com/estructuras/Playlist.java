@@ -1,6 +1,7 @@
 package com.estructuras;
 
 import java.io.File;
+import java.util.ArrayList;
 import org.jaudiotagger.audio.AudioFile;
 import org.jaudiotagger.audio.AudioFileIO;
 import org.jaudiotagger.audio.AudioHeader;
@@ -225,6 +226,22 @@ public class Playlist {
         return nombre + " - Canciones: " + contador ;
     }
     
-    
+    public ArrayList<Cancion> getPlaylistEnArray(Playlist playlist){
+        ArrayList<Cancion> array = new ArrayList<>();
+        
+        if(playlist.EstaVacia()) return array;
+        
+        Cancion temp = playlist.inicio;
+        
+        do{
+            array.add(temp);
+            temp = temp.siguiente;
+        }
+        while(temp != playlist.inicio);
+        
+        
+        return array;
+        
+    }
     
 }

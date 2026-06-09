@@ -119,9 +119,29 @@ public class Inicio extends javax.swing.JFrame {
         javax.swing.JPopupMenu popupPlaylist = new javax.swing.JPopupMenu();
         javax.swing.JMenuItem itemRenombrar = new javax.swing.JMenuItem("Renombrar...");
         javax.swing.JMenuItem itemEliminar = new javax.swing.JMenuItem("Eliminar");
+        javax.swing.JMenuItem itemExportar = new javax.swing.JMenuItem("Exportar (Encriptar)...");
         
         popupPlaylist.add(itemRenombrar);
         popupPlaylist.add(itemEliminar);
+        popupPlaylist.add(itemExportar);
+
+        itemExportar.addActionListener(new java.awt.event.ActionListener() {
+            @Override
+            public void actionPerformed(java.awt.event.ActionEvent e) {
+                Playlist seleccionada = listadoPlaylist.getSelectedValue();
+                if (seleccionada != null) {
+                    try {
+                        encriptador.Encriptador enc = new encriptador.Encriptador();
+                        String ruta = enc.encriptarPlaylist(seleccionada);
+                        if (ruta != null) {
+                            JOptionPane.showMessageDialog(null, "Playlist exportada y encriptada exitosamente en:\n" + ruta, "Éxito", JOptionPane.INFORMATION_MESSAGE);
+                        }
+                    } catch (Exception ex) {
+                        JOptionPane.showMessageDialog(null, "Error al exportar playlist: " + ex.getMessage(), "Error", JOptionPane.ERROR_MESSAGE);
+                    }
+                }
+            }
+        });
         
 
         itemRenombrar.addActionListener(new java.awt.event.ActionListener() {
@@ -191,6 +211,19 @@ public class Inicio extends javax.swing.JFrame {
         javax.swing.JMenuItem itemAgregarCola = new javax.swing.JMenuItem("Agregar a la cola de reproduccion");
         popupCanciones.add(submenuAgregar);
         popupCanciones.add(itemAgregarCola);
+
+        itemAgregarCola.addActionListener(new java.awt.event.ActionListener() {
+            @Override
+            public void actionPerformed(java.awt.event.ActionEvent e) {
+                java.util.List<Cancion> seleccionadas = listadoCanciones.getSelectedValuesList();
+                if (seleccionadas != null && !seleccionadas.isEmpty()) {
+                    for (Cancion cancion : seleccionadas) {
+                        reproductor.cola.encolar(cancion);
+                    }
+                    JOptionPane.showMessageDialog(null, "Se agregaron " + seleccionadas.size() + " canciones a la cola de reproducción.");
+                }
+            }
+        });
 
         listadoCanciones.addMouseListener(new java.awt.event.MouseAdapter() {
             @Override
@@ -304,6 +337,7 @@ public class Inicio extends javax.swing.JFrame {
         generalButton = new javax.swing.JButton();
         modoReproduccionCombo = new javax.swing.JComboBox<>();
         historialButton = new javax.swing.JButton();
+        importarPlaylistButton = new javax.swing.JButton();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
 
@@ -339,6 +373,15 @@ public class Inicio extends javax.swing.JFrame {
             }
         });
         jPanel1.add(playlistButton, new org.netbeans.lib.awtextra.AbsoluteConstraints(1150, 660, 140, 30));
+
+        importarPlaylistButton.setFont(new java.awt.Font("Gontserrat", 0, 12)); // NOI18N
+        importarPlaylistButton.setText("Importar Playlist");
+        importarPlaylistButton.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                importarPlaylistButtonActionPerformed(evt);
+            }
+        });
+        jPanel1.add(importarPlaylistButton, new org.netbeans.lib.awtextra.AbsoluteConstraints(1150, 700, 140, 30));
 
         listadoCanciones.setBackground(new java.awt.Color(102, 102, 102));
         listadoCanciones.setFont(new java.awt.Font("Gontserrat", 0, 14)); // NOI18N
@@ -534,13 +577,7 @@ public class Inicio extends javax.swing.JFrame {
         if (playlistActual == null || playlistActual.inicio == null) return;
         
         reproductor.setModo(modoReproduccionCombo.getSelectedIndex() + 1);
-        if (reproductor.modo == 1) {
-            reproductor.siguienteNormal(playlistActual);
-        } else if (reproductor.modo == 2) {
-            reproductor.siguienteAleatoria(playlistActual);
-        } else if (reproductor.modo == 3) {
-            reproductor.siguienteInfinita(playlistActual);
-        }
+        reproductor.avanzarSiguiente(playlistActual);
         
         seleccionarCancionEnLista(reproductor.getCancionActual());
     }//GEN-LAST:event_siguienteButtonActionPerformed
@@ -549,11 +586,7 @@ public class Inicio extends javax.swing.JFrame {
         if (playlistActual == null || playlistActual.inicio == null) return;
         
         reproductor.setModo(modoReproduccionCombo.getSelectedIndex() + 1);
-        if (reproductor.modo == 2) {
-            reproductor.siguienteAleatoria(playlistActual);
-        } else {
-            reproductor.anteriorCancion(playlistActual);
-        }
+        reproductor.retrocederAnterior(playlistActual);
         
         seleccionarCancionEnLista(reproductor.getCancionActual());
     }//GEN-LAST:event_anteriorButtonActionPerformed
@@ -564,6 +597,31 @@ public class Inicio extends javax.swing.JFrame {
         c.setDefaultCloseOperation(DISPOSE_ON_CLOSE);
         c.setVisible(true);
     }//GEN-LAST:event_playlistButtonActionPerformed
+
+    private void importarPlaylistButtonActionPerformed(java.awt.event.ActionEvent evt) {
+        try {
+            encriptador.Encriptador enc = new encriptador.Encriptador();
+            Playlist importada = enc.desencriptarPlaylist();
+            if (importada != null) {
+                boolean existe = false;
+                for (Playlist pl : playlists) {
+                    if (pl.nombre.equalsIgnoreCase(importada.nombre)) {
+                        existe = true;
+                        break;
+                    }
+                }
+                if (existe) {
+                    importada.nombre = importada.nombre + "_importada";
+                }
+                
+                playlists.add(importada);
+                modeloListaPlaylist.addElement(importada);
+                JOptionPane.showMessageDialog(this, "Playlist '" + importada.nombre + "' importada con éxito.", "Éxito", JOptionPane.INFORMATION_MESSAGE);
+            }
+        } catch (Exception ex) {
+            JOptionPane.showMessageDialog(this, "Error al importar la playlist: " + ex.getMessage(), "Error", JOptionPane.ERROR_MESSAGE);
+        }
+    }
 
     private void generalButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_generalButtonActionPerformed
         ArbolBinario arbol = ArbolBinario.getInstancia();
@@ -633,6 +691,7 @@ public class Inicio extends javax.swing.JFrame {
     public javax.swing.JComboBox<String> modoReproduccionCombo;
     private javax.swing.JButton playButton;
     private javax.swing.JButton playlistButton;
+    private javax.swing.JButton importarPlaylistButton;
     public javax.swing.JLabel playlistEnReproduccionLbl;
     private javax.swing.JLabel reproduccionLbl;
     private javax.swing.JButton siguienteButton;
