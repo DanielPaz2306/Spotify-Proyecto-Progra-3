@@ -17,6 +17,8 @@ public class Cancion {
     public String album;
     public String genero;
     
+    public int reproducciones;
+    
     public int altura;
     
     public int duracionSeg;

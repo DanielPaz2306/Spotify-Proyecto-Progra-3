@@ -70,6 +70,7 @@ public class Reproductor {
 
         JOptionPane.showMessageDialog(null, "Reproduciendo: " + cancionActual.nombre 
                                         + "\n De: " + cancionActual.artista);
+        cancion.reproducciones++;
     }
 
     public void pausar() {

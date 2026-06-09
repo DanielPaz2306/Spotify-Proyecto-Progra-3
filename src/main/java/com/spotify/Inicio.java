@@ -85,6 +85,16 @@ public class Inicio extends javax.swing.JFrame {
                     if (seleccionada != null) {
                         reproductor.detener();
                         reproductor.setModo(modoReproduccionCombo.getSelectedIndex() + 1);
+                        
+                        Playlist seleccionadaPl = listadoPlaylist.getSelectedValue();
+                        if (seleccionadaPl != null && txtBuscar.getText().trim().isEmpty()) {
+                            playlistActual = seleccionadaPl;
+                        } else {
+                            playlistActual = lista;
+                            listadoPlaylist.clearSelection();
+                        }
+                        playlistEnReproduccionLbl.setText(playlistActual.nombre);
+                        
                         reproductor.reproducir(seleccionada, playlistActual); 
                     }
                     else{
@@ -635,6 +645,7 @@ public class Inicio extends javax.swing.JFrame {
         for(Cancion c : temp) {
             modeloListaCanciones.addElement(c);
         }
+        playlistActual = lista;
     }//GEN-LAST:event_generalButtonActionPerformed
 
     private void modoReproduccionComboActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_modoReproduccionComboActionPerformed
