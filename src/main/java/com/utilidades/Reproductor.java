@@ -1,8 +1,11 @@
 package com.utilidades;
 
 import com.estructuras.Cancion;
+import com.estructuras.Historial;
 import com.estructuras.Playlist;
 import java.io.File;
+import java.util.ArrayList;
+import java.util.Random;
 
 import javafx.embed.swing.JFXPanel;
 import javafx.scene.media.Media;
@@ -17,23 +20,46 @@ import org.jaudiotagger.tag.Tag;
 public class Reproductor {
 
     private MediaPlayer player;
-    public  Cancion cancionActual = null;
+    public  Cancion cancionActual = new Cancion("","","","",0,0,"","");
+    public Playlist playlistActual = null;
+    public int modo = 1; // Default to Normal mode (1)
+    private ReproductorListener listener;
 
     public Reproductor() {
 
-        // Inicializa JavaFX
         new JFXPanel();
+    }
+
+    public void setListener(ReproductorListener listener) {
+        this.listener = listener;
+    }
+
+    public void setModo(int nuevoModo) {
+        this.modo = nuevoModo;
+        if (player != null && playlistActual != null) {
+            if(modo == 1) player.setOnEndOfMedia(() -> siguienteNormal(playlistActual));
+            else if(modo == 2) player.setOnEndOfMedia(() -> siguienteAleatoria(playlistActual));
+            else if(modo == 3) player.setOnEndOfMedia(() -> siguienteInfinita(playlistActual));
+        }
     }
 
     public void reproducir(Cancion cancion, Playlist lista) {
 
         detener();
+        Historial historial = Historial.getInstancia();
+        historial.Insertar(cancion);
         Media media = new Media(new File(cancion.ruta).toURI().toString());
         player = new MediaPlayer(media);
         cancionActual = cancion;
-
-        player.setOnEndOfMedia(() -> siguienteCancion(lista));
+        playlistActual = lista;
+        if(modo == 1) player.setOnEndOfMedia(() -> siguienteNormal(lista)); //MODO NORMAL
+        else if(modo == 2) player.setOnEndOfMedia(() -> siguienteAleatoria(lista)); //MODO ALEATORIA
+        else if(modo == 3) player.setOnEndOfMedia(() -> siguienteInfinita(lista)); //MODO CIRCULAR
         player.play();
+
+        if (listener != null) {
+            listener.onCancionCambiada(cancionActual);
+        }
 
         JOptionPane.showMessageDialog(null, "Reproduciendo: " + cancionActual.nombre 
                                         + "\n De: " + cancionActual.artista);
@@ -120,8 +146,16 @@ public class Reproductor {
         Cancion actual = lista.inicio;
         do {
             if (actual.ruta.equals(cancionActual.ruta)) {
-                reproducir(actual.siguiente, lista);
-                return;
+                
+                if(actual.siguiente == lista.inicio){
+                    reproducir(lista.inicio, lista);
+                    return;
+                }
+                else{
+                    reproducir(actual.siguiente, lista);
+                    return;
+                }
+
             }
             actual = actual.siguiente;
         } while (actual != lista.inicio);
@@ -133,10 +167,94 @@ public class Reproductor {
         Cancion actual = lista.inicio;
         do {
             if (actual.ruta.equals(cancionActual.ruta)) {
-                reproducir(actual.anterior, lista);
-                return;
+                if(actual == lista.inicio){
+                    reproducir(lista.fin, lista);
+                    return;
+                }
+                else{
+                    reproducir(actual.anterior, lista);
+                    return;                    
+                }
+
             }
             actual = actual.anterior;
         } while (actual != lista.inicio);
     }
+
+    public void siguienteNormal(Playlist lista){
+        if (cancionActual == null || lista == null) return;
+
+        Cancion actual = lista.inicio;
+        do {
+            if (actual.ruta.equals(cancionActual.ruta)) {
+                
+                if(actual.siguiente == lista.inicio){
+                    detener();
+                    return;
+                }
+                else{
+                    reproducir(actual.siguiente, lista);
+                    return;
+                }
+
+            }
+            actual = actual.siguiente;
+        } while (actual != lista.inicio); 
+    }
+    
+    public void siguienteInfinita(Playlist lista){
+        if (cancionActual == null || lista == null) return;
+        Cancion actual = lista.inicio;
+        do {
+            if (actual.ruta.equals(cancionActual.ruta)) {
+                
+                if(actual.siguiente == lista.inicio){
+                    reproducir(lista.inicio, lista);
+                    return;
+                }
+                else{
+                    reproducir(actual.siguiente, lista);
+                    return;
+                }
+
+            }
+            actual = actual.siguiente;
+        } while (actual != lista.inicio);
+    }
+    
+    public void siguienteAleatoria(Playlist lista){
+        if (lista == null || lista.inicio == null) return;
+        
+        ArrayList<Cancion> listaArray = new ArrayList<>();
+        Cancion temp = lista.inicio;
+        do {
+            listaArray.add(temp);
+            temp = temp.siguiente;
+        } while (temp != lista.inicio);
+        
+        if (listaArray.isEmpty()) return;
+        
+        if (listaArray.size() == 1) {
+            reproducir(listaArray.get(0), lista);
+            return;
+        }
+        
+        int index = -1;
+        for (int i = 0; i < listaArray.size(); i++) {
+            if (listaArray.get(i).ruta.equalsIgnoreCase(cancionActual.ruta)) {
+                index = i;
+                break;
+            }
+        }
+        
+        Random random = new Random();
+        int num;
+        do {
+            num = random.nextInt(listaArray.size());
+        } while (num == index);
+        
+        reproducir(listaArray.get(num), lista);
+    }
+    
+    
 }

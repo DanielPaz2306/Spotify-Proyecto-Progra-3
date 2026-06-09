@@ -5,6 +5,8 @@
 package com.estructuras;
 
 import java.io.File;
+import java.util.List;
+import javax.swing.DefaultListModel;
 import org.jaudiotagger.audio.AudioFile;
 import org.jaudiotagger.audio.AudioFileIO;
 import org.jaudiotagger.audio.AudioHeader;
@@ -19,7 +21,7 @@ public class ArbolAVL {
     
     
 
-    private Cancion raiz;
+    public Cancion raiz;
     private int contador;
     
     private static ArbolAVL instancia;
@@ -128,13 +130,15 @@ public class ArbolAVL {
         
         if(cmp < 0){
             nodo.izquierda = insertarRecursivo(nodo.izquierda, nombre, artista, album, genero, duracionSeg, tamaño, ruta, año);
-        }
-        if(cmp > 0){
+        } else if(cmp > 0){
             nodo.derecha = insertarRecursivo(nodo.derecha, nombre, artista, album, genero, duracionSeg, tamaño, ruta, año);
-        }
-        else{
+        } else if(nodo.nombre.equalsIgnoreCase(nombre) && nodo.artista.equalsIgnoreCase(artista) && nodo.genero.equalsIgnoreCase(genero)){
+            // Duplicado exacto: no insertar
             System.out.println("DUPLICADO----------");
             return nodo;
+        } else {
+            // Mismo nombre pero distinto artista/genero: insertar a la izquierda
+            nodo.izquierda = insertarRecursivo(nodo.izquierda, nombre, artista, album, genero, duracionSeg, tamaño, ruta, año);
         }
         return balancear(nodo);
     }
@@ -281,6 +285,18 @@ public class ArbolAVL {
         inorden(nodo.derecha);
     }
     
-    
+    public void buscarPorNombre(Cancion nodo, String nombre, DefaultListModel<Cancion> resultado) {
+        if (nodo == null) return;
+
+        // Recorrido inorden completo buscando coincidencia parcial (case-insensitive)
+        buscarPorNombre(nodo.izquierda, nombre, resultado);
+        
+        if (nodo.nombre.toLowerCase().contains(nombre.toLowerCase())) {
+            resultado.addElement(nodo);
+        }
+        
+        buscarPorNombre(nodo.derecha, nombre, resultado);
+    }
+
     
 }

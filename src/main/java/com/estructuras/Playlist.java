@@ -52,7 +52,7 @@ public class Playlist {
     
     public void Insertar(Cancion cancion){
             
-        Cancion nuevo = cancion;
+        Cancion nuevo = new Cancion(cancion.nombre, cancion.artista, cancion.album, cancion.genero, cancion.duracionSeg, cancion.tamaño, cancion.ruta, cancion.año);
         
         if(EstaVacia()){
             inicio = fin = nuevo;
