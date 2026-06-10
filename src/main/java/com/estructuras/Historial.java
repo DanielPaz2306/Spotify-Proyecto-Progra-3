@@ -4,7 +4,8 @@
  */
 package com.estructuras;
 
-import javax.swing.DefaultListModel;
+import java.util.List;
+import java.util.ArrayList;
 
 /**
  *
@@ -45,20 +46,18 @@ public class Historial {
         inicio = nuevo;
     }
     
-    public DefaultListModel<Cancion> recorrerLista(){
-       if(EstaVacio()) return new DefaultListModel<Cancion>();
+    public List<Cancion> recorrerLista(){
+       if(EstaVacio()) return new ArrayList<Cancion>();
        
        Cancion temp = inicio;
-       DefaultListModel<Cancion> historial = new DefaultListModel<Cancion>();
+       List<Cancion> historial = new ArrayList<Cancion>();
        
        while(temp != null){
-           historial.addElement(temp);
+           historial.add(temp);
            temp = temp.siguiente;
        }
        
        return historial;
-       
-       
     }
     
 }

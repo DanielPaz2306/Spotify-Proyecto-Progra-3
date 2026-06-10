@@ -6,7 +6,6 @@ package com.estructuras;
 
 import java.io.File;
 import java.util.List;
-import javax.swing.DefaultListModel;
 import org.jaudiotagger.audio.AudioFile;
 import org.jaudiotagger.audio.AudioFileIO;
 import org.jaudiotagger.audio.AudioHeader;
@@ -292,7 +291,7 @@ public class ArbolAVL {
         inorden(nodo.derecha);
     }
 
-    public void buscarPorNombre(Cancion nodo, String nombre, DefaultListModel<Cancion> resultado) {
+    public void buscarPorNombre(Cancion nodo, String nombre, List<Cancion> resultado) {
         if (nodo == null) {
             return;
         }
@@ -301,7 +300,7 @@ public class ArbolAVL {
         buscarPorNombre(nodo.izquierda, nombre, resultado);
 
         if (nodo.nombre.toLowerCase().contains(nombre.toLowerCase())) {
-            resultado.addElement(nodo);
+            resultado.add(nodo);
         }
 
         buscarPorNombre(nodo.derecha, nombre, resultado);

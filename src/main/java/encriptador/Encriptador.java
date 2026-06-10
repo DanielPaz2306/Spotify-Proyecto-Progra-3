@@ -19,7 +19,6 @@ import java.util.ArrayList;
 import java.util.Base64;
 import javax.crypto.Cipher;
 import javax.crypto.spec.SecretKeySpec;
-import javax.swing.JFileChooser;
 
 /**
  *
@@ -48,21 +47,15 @@ public class Encriptador {
     
     public Encriptador(){}
     
-    public String encriptarPlaylist(Playlist playlist) throws Exception{
+    public String encriptarPlaylist(Playlist playlist, File carpetaDestino) throws Exception{
         if (playlist == null || playlist.nombre == null || playlist.nombre.isBlank()) {
             throw new IllegalArgumentException("La playlist no es válida o no tiene nombre.");
         }   
-        
-        JFileChooser chooser = new JFileChooser();
-        chooser.setDialogTitle("Eliga la carpeta donde guardar su archivo");
-        chooser.setFileSelectionMode(JFileChooser.DIRECTORIES_ONLY);
-        
-        if (chooser.showOpenDialog(null) != JFileChooser.APPROVE_OPTION) {
-            return null; 
+        if (carpetaDestino == null || !carpetaDestino.isDirectory()) {
+            throw new IllegalArgumentException("Carpeta de destino inválida.");
         }
         
-        String carpeta = chooser.getSelectedFile().getAbsolutePath();
-        String rutaArchivo = carpeta + File.separator + playlist.nombre + "_encriptada.txt";
+        String rutaArchivo = carpetaDestino.getAbsolutePath() + File.separator + playlist.nombre + "_encriptada.txt";
         
         try(BufferedWriter writer = new BufferedWriter(new FileWriter(rutaArchivo, StandardCharsets.UTF_8))){
             Cancion actual = playlist.inicio;
@@ -77,21 +70,16 @@ public class Encriptador {
         }
     }
     
-    public Playlist desencriptarPlaylist() throws Exception {
-        JFileChooser chooser = new JFileChooser();
-        chooser.setDialogTitle("Seleccione el archivo de playlist encriptado");
-        chooser.setFileFilter(new javax.swing.filechooser.FileNameExtensionFilter("Archivos de texto (*.txt)", "txt"));
-        
-        if (chooser.showOpenDialog(null) != JFileChooser.APPROVE_OPTION) {
-            return null;
+    public Playlist desencriptarPlaylist(File archivoEncriptado) throws Exception {
+        if (archivoEncriptado == null || !archivoEncriptado.exists()) {
+            throw new IllegalArgumentException("Archivo encriptado inválido.");
         }
         
-        File archivo = chooser.getSelectedFile();
-        String nombrePlaylist = archivo.getName().replace("_encriptada.txt", "").replace(".txt", "");
+        String nombrePlaylist = archivoEncriptado.getName().replace("_encriptada.txt", "").replace(".txt", "");
         
         Playlist playlist = new Playlist(nombrePlaylist);
         
-        try (BufferedReader reader = new BufferedReader(new InputStreamReader(new FileInputStream(archivo), StandardCharsets.UTF_8))) {
+        try (BufferedReader reader = new BufferedReader(new InputStreamReader(new FileInputStream(archivoEncriptado), StandardCharsets.UTF_8))) {
             String linea;
             while ((linea = reader.readLine()) != null) {
                 if (linea.trim().isEmpty()) continue;

@@ -1,18 +1,10 @@
 package com.spotify;
 
-
-import com.formdev.flatlaf.FlatDarkLaf;
-
+import javafx.application.Application;
 
 public class main {
 
     public static void main(String[] args) {
-
-        FlatDarkLaf.setup();
-        
-        Inicio inicio = new Inicio();
-        
-        inicio.setVisible(true);
-        
+        Application.launch(SpotifyFXApp.class, args);
     }
 }

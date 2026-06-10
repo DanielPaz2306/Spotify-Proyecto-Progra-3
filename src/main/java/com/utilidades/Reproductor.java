@@ -8,10 +8,8 @@ import java.io.File;
 import java.util.ArrayList;
 import java.util.Random;
 
-import javafx.embed.swing.JFXPanel;
 import javafx.scene.media.Media;
 import javafx.scene.media.MediaPlayer;
-import javax.swing.JOptionPane;
 import org.jaudiotagger.audio.AudioFile;
 import org.jaudiotagger.audio.AudioFileIO;
 import org.jaudiotagger.audio.AudioHeader;
@@ -29,8 +27,6 @@ public class Reproductor {
     public Cancion originalPlaylistTrack = null;
 
     public Reproductor() {
-
-        new JFXPanel();
     }
 
     public void setListener(ReproductorListener listener) {
@@ -68,8 +64,7 @@ public class Reproductor {
             listener.onCancionCambiada(cancionActual);
         }
 
-        JOptionPane.showMessageDialog(null, "Reproduciendo: " + cancionActual.nombre 
-                                        + "\n De: " + cancionActual.artista);
+        System.out.println("Reproduciendo: " + cancionActual.nombre + " - " + cancionActual.artista);
         cancion.reproducciones++;
         com.utilidades.Estadisticas.registrarReproduccion(cancion.ruta);
     }
@@ -83,6 +78,10 @@ public class Reproductor {
     
     public Cancion getCancionActual(){
         return cancionActual;
+    }
+
+    public MediaPlayer getPlayer() {
+        return player;
     }
 
     public void reanudar() {

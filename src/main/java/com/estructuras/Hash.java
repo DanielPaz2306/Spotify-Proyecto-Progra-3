@@ -8,8 +8,6 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
-import javax.swing.DefaultListModel;
-import javax.swing.JOptionPane;
 
 /**
  *
@@ -31,54 +29,43 @@ public class Hash {
         return instancia;
     }
     
-    public void clasificarCanciones(DefaultListModel<Cancion> canciones){
-        
-        for(int i = 0; i < canciones.getSize(); i++){
-            Cancion cancion = canciones.getElementAt(i);
-            
+    public void clasificarCanciones(List<Cancion> canciones){
+        for(Cancion cancion : canciones){
             hashGenero.computeIfAbsent(cancion.genero.toLowerCase(), k -> new ArrayList<>()).add(cancion);
             hashArtista.computeIfAbsent(cancion.artista.toLowerCase(), k -> new ArrayList<>()).add(cancion);
         }
-        JOptionPane.showMessageDialog(null, "AGREGADAS AL HASH");
+        System.out.println("AGREGADAS AL HASH");
     }
     
-    public DefaultListModel<Cancion> buscarPorArtista(String artista) {
-        DefaultListModel<Cancion> resultado = new DefaultListModel<>();
+    public List<Cancion> buscarPorArtista(String artista) {
+        List<Cancion> resultado = new ArrayList<>();
         List<Cancion> canciones = hashArtista.getOrDefault(artista.toLowerCase(), Collections.emptyList());
-        for (Cancion c : canciones) {
-            resultado.addElement(c);
-        }
+        resultado.addAll(canciones);
         return resultado;
     }
     
-    public DefaultListModel<Cancion> buscarPorGenero(String genero) {
-        DefaultListModel<Cancion> resultado = new DefaultListModel<>();
+    public List<Cancion> buscarPorGenero(String genero) {
+        List<Cancion> resultado = new ArrayList<>();
         List<Cancion> canciones = hashGenero.getOrDefault(genero.toLowerCase(), Collections.emptyList());
-        for (Cancion c : canciones) {
-            resultado.addElement(c);
-        }
+        resultado.addAll(canciones);
         return resultado;
     }
     
-    public DefaultListModel<Cancion> buscarPorArtistaParcial(String texto) {
-        DefaultListModel<Cancion> resultado = new DefaultListModel<>();
+    public List<Cancion> buscarPorArtistaParcial(String texto) {
+        List<Cancion> resultado = new ArrayList<>();
         for (String artista : hashArtista.keySet()) {
             if (artista.toLowerCase().contains(texto.toLowerCase())) {
-                for (Cancion c : hashArtista.get(artista)) {
-                    resultado.addElement(c);
-                }
+                resultado.addAll(hashArtista.get(artista));
             }
         }
         return resultado;
     }
 
-    public DefaultListModel<Cancion> buscarPorGeneroParcial(String texto) {
-        DefaultListModel<Cancion> resultado = new DefaultListModel<>();
+    public List<Cancion> buscarPorGeneroParcial(String texto) {
+        List<Cancion> resultado = new ArrayList<>();
         for (String genero : hashGenero.keySet()) {
             if (genero.toLowerCase().contains(texto.toLowerCase())) {
-                for (Cancion c : hashGenero.get(genero)) {
-                    resultado.addElement(c);
-                }
+                resultado.addAll(hashGenero.get(genero));
             }
         }
         return resultado;
