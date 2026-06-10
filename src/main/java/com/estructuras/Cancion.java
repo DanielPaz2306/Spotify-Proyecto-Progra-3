@@ -49,6 +49,7 @@ public class Cancion {
         this.siguiente = null;
         this.derecha = null;
         this.izquierda = null;
+        this.reproducciones = com.utilidades.Estadisticas.getPlayCount(ruta);
     }
     
     public Cancion(String nombre, String artista, String album, String genero, int duracion, long tamaño, String ruta, String año, Cancion siguiente, Cancion anterior){
@@ -66,6 +67,7 @@ public class Cancion {
         this.altura = 1;
         this.siguiente = siguiente;
         this.anterior = anterior;
+        this.reproducciones = com.utilidades.Estadisticas.getPlayCount(ruta);
     }
 
     @Override

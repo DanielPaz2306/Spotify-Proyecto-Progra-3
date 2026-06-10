@@ -264,4 +264,33 @@ public class ArbolBinario {
                n.endsWith(".wav");
     }
 
+    public String toDOT() {
+        StringBuilder sb = new StringBuilder();
+        sb.append("digraph BST {\n");
+        sb.append("  node [shape=circle, style=filled, fillcolor=lightblue];\n");
+        generarDOT(raiz, sb);
+        sb.append("}");
+        return sb.toString();
+    }
+    
+    private void generarDOT(Cancion n, StringBuilder sb) {
+        if (n == null) return;
+        String idActual = "N" + System.identityHashCode(n);
+        String label = n.nombre.replace("\"", "\\\"");
+        sb.append("  ").append(idActual).append(" [label=\"").append(label).append("\"];\n");
+        
+        if (n.izquierda != null) {
+            String idIzq = "N" + System.identityHashCode(n.izquierda);
+            sb.append("  ").append(idActual).append(" -> ").append(idIzq).append(";\n");
+            generarDOT(n.izquierda, sb);
+        }
+        if (n.derecha != null) {
+            String idDer = "N" + System.identityHashCode(n.derecha);
+            sb.append("  ").append(idActual).append(" -> ").append(idDer).append(";\n");
+            generarDOT(n.derecha, sb);
+        }
+    }
+    
+  
+    
 }

@@ -18,15 +18,14 @@ import org.jaudiotagger.tag.Tag;
  * @author pchin
  */
 public class ArbolAVL {
-    
-    
 
     public Cancion raiz;
     private int contador;
-    
+
     private static ArbolAVL instancia;
 
-    private ArbolAVL() {}
+    private ArbolAVL() {
+    }
 
     public static ArbolAVL getInstancia() {
         if (instancia == null) {
@@ -34,37 +33,36 @@ public class ArbolAVL {
         }
         return instancia;
     }
-    
-    public int getContador(){
+
+    public int getContador() {
         return contador;
     }
-    
+
     public void limpiar() {
         this.raiz = null;
         this.contador = 0;
     }
-    
-    private int altura(Cancion cancion){
-        if(cancion == null) return 0;
-        
-        else{
+
+    private int altura(Cancion cancion) {
+        if (cancion == null) {
+            return 0;
+        } else {
             return cancion.altura;
         }
     }
-    
-    private int factorBalance(Cancion cancion){
-        if(cancion == null){
+
+    private int factorBalance(Cancion cancion) {
+        if (cancion == null) {
             return 0;
-        }
-        else{
+        } else {
             return altura(cancion.izquierda) - altura(cancion.derecha);
         }
     }
-    
-    private void actualizarAltura(Cancion cancion){
+
+    private void actualizarAltura(Cancion cancion) {
         cancion.altura = 1 + Math.max(altura(cancion.izquierda), altura(cancion.derecha));
     }
-    
+
     private Cancion rotarDerecha(Cancion y) {
         Cancion x = y.izquierda;
         Cancion T2 = x.derecha;
@@ -77,7 +75,7 @@ public class ArbolAVL {
 
         return x;
     }
-    
+
     private Cancion rotarIzquierda(Cancion x) {
         Cancion y = x.derecha;
         Cancion T2 = y.izquierda;
@@ -90,49 +88,49 @@ public class ArbolAVL {
 
         return y;
     }
-    
-    private Cancion balancear(Cancion cancion){
+
+    private Cancion balancear(Cancion cancion) {
         actualizarAltura(cancion);
         int balance = factorBalance(cancion);
-        
-        if(balance > 1 && factorBalance(cancion.izquierda) >= 0){
+
+        if (balance > 1 && factorBalance(cancion.izquierda) >= 0) {
             return rotarDerecha(cancion);
         }
-        
-        if(balance > 1 && factorBalance(cancion.izquierda) < 0){
+
+        if (balance > 1 && factorBalance(cancion.izquierda) < 0) {
             cancion.izquierda = rotarIzquierda(cancion.izquierda);
             return rotarDerecha(cancion);
         }
-        
-        if(balance < -1 && factorBalance(cancion.derecha) <= 0){
+
+        if (balance < -1 && factorBalance(cancion.derecha) <= 0) {
             return rotarIzquierda(cancion);
         }
-        
-        if(balance < -1 && factorBalance(cancion.derecha) > 0){
+
+        if (balance < -1 && factorBalance(cancion.derecha) > 0) {
             cancion.derecha = rotarDerecha(cancion.derecha);
             return rotarIzquierda(cancion);
         }
-        
+
         return cancion;
     }
-    
-    public void Insertar(String nombre, String artista, String album, String genero, int duracionSeg, long tamaño, String ruta, String año){
+
+    public void Insertar(String nombre, String artista, String album, String genero, int duracionSeg, long tamaño, String ruta, String año) {
         raiz = insertarRecursivo(raiz, nombre, artista, album, genero, duracionSeg, tamaño, ruta, año);
-    } 
-    
-    public Cancion insertarRecursivo(Cancion nodo, String nombre, String artista, String album, String genero, int duracionSeg, long tamaño, String ruta, String año){
-        if(nodo == null){
+    }
+
+    public Cancion insertarRecursivo(Cancion nodo, String nombre, String artista, String album, String genero, int duracionSeg, long tamaño, String ruta, String año) {
+        if (nodo == null) {
             contador++;
             return new Cancion(nombre, artista, album, genero, duracionSeg, tamaño, ruta, año);
         }
-        
+
         int cmp = nombre.compareToIgnoreCase(nodo.nombre);
-        
-        if(cmp < 0){
+
+        if (cmp < 0) {
             nodo.izquierda = insertarRecursivo(nodo.izquierda, nombre, artista, album, genero, duracionSeg, tamaño, ruta, año);
-        } else if(cmp > 0){
+        } else if (cmp > 0) {
             nodo.derecha = insertarRecursivo(nodo.derecha, nombre, artista, album, genero, duracionSeg, tamaño, ruta, año);
-        } else if(nodo.nombre.equalsIgnoreCase(nombre) && nodo.artista.equalsIgnoreCase(artista) && nodo.genero.equalsIgnoreCase(genero)){
+        } else if (nodo.nombre.equalsIgnoreCase(nombre) && nodo.artista.equalsIgnoreCase(artista) && nodo.genero.equalsIgnoreCase(genero)) {
             // Duplicado exacto: no insertar
             System.out.println("DUPLICADO----------");
             return nodo;
@@ -142,24 +140,21 @@ public class ArbolAVL {
         }
         return balancear(nodo);
     }
-    
-    public void insertarDesdeArchivo(String ruta){
-        try{
+
+    public void insertarDesdeArchivo(String ruta) {
+        try {
             File archivo = new File(ruta);
             AudioFile audioFile = AudioFileIO.read(archivo);
-            
+
             Tag tag = audioFile.getTag();
-            
+
             AudioHeader header = audioFile.getAudioHeader();
-            
+
             String nombre = tag.getFirst(FieldKey.TITLE);
 
             if (nombre == null || nombre.trim().isEmpty()) {
                 nombre = archivo.getName();
             }
-
-
-
 
             String artista = tag.getFirst(FieldKey.ARTIST);
             if (artista == null || artista.trim().isEmpty()) {
@@ -171,27 +166,29 @@ public class ArbolAVL {
                 album = "Sin álbum";
             }
 
-            String genero  = tag.getFirst(FieldKey.GENRE);
-            String año     = tag.getFirst(FieldKey.YEAR);
-            int duracion   = header.getTrackLength();
-            long tamaño    = archivo.length();
+            String genero = tag.getFirst(FieldKey.GENRE);
+            String año = tag.getFirst(FieldKey.YEAR);
+            int duracion = header.getTrackLength();
+            long tamaño = archivo.length();
 
             this.Insertar(nombre, artista, album, genero, duracion, tamaño, ruta, año);
-            
-            
-        }
-        catch(Exception e){
+
+        } catch (Exception e) {
             System.out.println("Error: " + e.getMessage());
         }
     }
-    
-    public void insertarDesdeCarpeta(String rutaCarpeta){
+
+    public void insertarDesdeCarpeta(String rutaCarpeta) {
         File carpeta = new File(rutaCarpeta);
 
-        if (!carpeta.exists() || !carpeta.isDirectory()) return;
+        if (!carpeta.exists() || !carpeta.isDirectory()) {
+            return;
+        }
 
         File[] contenido = carpeta.listFiles();
-        if (contenido == null) return;
+        if (contenido == null) {
+            return;
+        }
 
         for (File archivo : contenido) {
             if (archivo.isDirectory()) {
@@ -206,97 +203,142 @@ public class ArbolAVL {
             }
         }
     }
-    
+
     private boolean esAudio(String nombre) {
         String n = nombre.toLowerCase();
-        return n.endsWith(".mp3")  ||
-               n.endsWith(".flac") ||
-               n.endsWith(".m4a")  ||
-               n.endsWith(".ogg")  ||
-               n.endsWith(".wav");
+        return n.endsWith(".mp3")
+                || n.endsWith(".flac")
+                || n.endsWith(".m4a")
+                || n.endsWith(".ogg")
+                || n.endsWith(".wav");
     }
-    
+
     public void eliminar(Cancion eliminar) {
         raiz = eliminar(raiz, eliminar);
     }
-    
-    public Cancion eliminar(Cancion nodo, Cancion eliminar){
-        if(nodo == null){
+
+    public Cancion eliminar(Cancion nodo, Cancion eliminar) {
+        if (nodo == null) {
             return null;
         }
-        
+
         int cmp = eliminar.nombre.compareToIgnoreCase(nodo.nombre);
-        
-        if(cmp < 0){
+
+        if (cmp < 0) {
             nodo.izquierda = eliminar(nodo.izquierda, eliminar);
         }
-        if(cmp > 0){
+        if (cmp > 0) {
             nodo.derecha = eliminar(nodo.derecha, eliminar);
         }
-        if(cmp == 0){
+        if (cmp == 0) {
             nodo.izquierda = eliminar(nodo.izquierda, eliminar);
-        }
-        else{
-            if(nodo.izquierda == null) return nodo.derecha;
-            if(nodo.derecha == null) return nodo.izquierda;
-            
+        } else {
+            if (nodo.izquierda == null) {
+                return nodo.derecha;
+            }
+            if (nodo.derecha == null) {
+                return nodo.izquierda;
+            }
+
             Cancion sucesor = minimo(nodo.derecha);
-            nodo.nombre  = sucesor.nombre;
-            nodo.derecha =  eliminar(nodo.derecha, sucesor);
+            nodo.nombre = sucesor.nombre;
+            nodo.derecha = eliminar(nodo.derecha, sucesor);
         }
         return balancear(nodo);
     }
-    
+
     private Cancion minimo(Cancion nodo) {
-        while (nodo.izquierda != null) nodo = nodo.izquierda;
+        while (nodo.izquierda != null) {
+            nodo = nodo.izquierda;
+        }
         return nodo;
     }
-    
+
     public boolean buscar(Cancion nodo) {
         return buscar(raiz, nodo);
     }
 
     private boolean buscar(Cancion nodo, Cancion valor) {
-        if (nodo == null) return false;
-        if (valor == nodo) return true;
-        
+        if (nodo == null) {
+            return false;
+        }
+        if (valor == nodo) {
+            return true;
+        }
+
         int cmp = valor.nombre.compareToIgnoreCase(nodo.nombre);
-        
-        if(cmp < 0){
+
+        if (cmp < 0) {
             return buscar(nodo.izquierda, valor);
         }
-        if(cmp > 0){
+        if (cmp > 0) {
             return buscar(nodo.derecha, valor);
-        }
-        else{
+        } else {
             return buscar(nodo.izquierda, valor);
         }
     }
-    
+
     public void inorden() {
         inorden(raiz);
         System.out.println();
     }
 
     private void inorden(Cancion nodo) {
-        if (nodo == null) return;
+        if (nodo == null) {
+            return;
+        }
         inorden(nodo.izquierda);
         System.out.print(nodo.nombre + " ");
         inorden(nodo.derecha);
     }
-    
+
     public void buscarPorNombre(Cancion nodo, String nombre, DefaultListModel<Cancion> resultado) {
-        if (nodo == null) return;
+        if (nodo == null) {
+            return;
+        }
 
         // Recorrido inorden completo buscando coincidencia parcial (case-insensitive)
         buscarPorNombre(nodo.izquierda, nombre, resultado);
-        
+
         if (nodo.nombre.toLowerCase().contains(nombre.toLowerCase())) {
             resultado.addElement(nodo);
         }
-        
+
         buscarPorNombre(nodo.derecha, nombre, resultado);
     }
+
+    public String toDOT() {
+        StringBuilder sb = new StringBuilder();
+        sb.append("digraph AVL {\n");
+        sb.append("  node [shape=circle, style=filled];\n");
+        generarDOT(raiz, sb);
+        sb.append("}");
+        return sb.toString();
+    }
+    
+    private void generarDOT(Cancion n, StringBuilder sb) {
+        if (n == null) return;
+        int bal = factorBalance(n);
+        String color = bal == 0 ? "lightgreen" : (Math.abs(bal) == 1 ? "lightyellow" : "salmon");
+        String idActual = "N" + System.identityHashCode(n);
+        String label = n.nombre.replace("\"", "\\\"") + "\\nbal=" + bal;
+        
+        sb.append("  ").append(idActual)
+          .append(" [label=\"").append(label).append("\"")
+          .append(", fillcolor=").append(color).append("];\n");
+          
+        if (n.izquierda != null) {
+            String idIzq = "N" + System.identityHashCode(n.izquierda);
+            sb.append("  ").append(idActual).append(" -> ").append(idIzq).append(";\n");
+            generarDOT(n.izquierda, sb);
+        }
+        if (n.derecha != null) {
+            String idDer = "N" + System.identityHashCode(n.derecha);
+            sb.append("  ").append(idActual).append(" -> ").append(idDer).append(";\n");
+            generarDOT(n.derecha, sb);
+        }
+    }
+    
 
     
 }

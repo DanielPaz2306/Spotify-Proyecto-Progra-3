@@ -71,6 +71,7 @@ public class Reproductor {
         JOptionPane.showMessageDialog(null, "Reproduciendo: " + cancionActual.nombre 
                                         + "\n De: " + cancionActual.artista);
         cancion.reproducciones++;
+        com.utilidades.Estadisticas.registrarReproduccion(cancion.ruta);
     }
 
     public void pausar() {

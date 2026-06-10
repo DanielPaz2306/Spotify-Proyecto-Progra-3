@@ -1,7 +1,9 @@
 com\frames\AgregarCanciones$1.class
 com\spotify\Inicio$3.class
+com\spotify\Inicio$22.class
 com\spotify\Inicio$19.class
 com\spotify\main.class
+com\spotify\Inicio$ImagePanel.class
 com\frames\HistorialForm.class
 com\spotify\Inicio$12.class
 com\spotify\Inicio$16.class
@@ -13,6 +15,7 @@ com\estructuras\ArbolBinario.class
 com\frames\EditarPlaylist$3.class
 com\frames\CrearPlaylist.class
 encriptador\Encriptador.class
+com\spotify\Inicio$23.class
 com\estructuras\ArbolAVL.class
 com\spotify\Inicio$15.class
 com\spotify\Inicio$2.class
@@ -29,16 +32,19 @@ com\spotify\Inicio$18.class
 com\spotify\Inicio$9$1.class
 com\frames\CrearPlaylist$2.class
 com\utilidades\Estadisticas.class
+com\frames\EstadisticasForm.class
 com\spotify\Inicio.class
 com\spotify\Inicio$1.class
 com\spotify\Inicio$17.class
 com\spotify\Home.class
+com\spotify\Inicio$24.class
 com\spotify\Inicio$14.class
 com\spotify\Inicio$9.class
 com\spotify\Home$1.class
 com\spotify\Inicio$13.class
 com\spotify\Inicio$4.class
 com\estructuras\Historial.class
+com\spotify\Inicio$ImagePanel$1.class
 com\estructuras\Cola$NodoCola.class
 com\spotify\Inicio$21.class
 com\frames\AgregarCanciones$2.class

@@ -33,7 +33,7 @@ public class Inicio extends javax.swing.JFrame {
     public ArrayList<Playlist> playlists = new ArrayList();
     
     public Playlist playlistActual = new Playlist();
-    
+    public ArbolBinario arbol = ArbolBinario.getInstancia();
     public DefaultListModel<Cancion> modeloListaCanciones = new DefaultListModel<>();
     public DefaultListModel<Playlist> modeloListaPlaylist = new DefaultListModel<>();
     public ArbolAVL arbolAvl = ArbolAVL.getInstancia();
@@ -317,6 +317,21 @@ public class Inicio extends javax.swing.JFrame {
         });
         
         reproductor.setModo(modoReproduccionCombo.getSelectedIndex() + 1);
+        
+        // 4. Botón de Estadísticas programático
+        javax.swing.JButton estadisticasBtn = new javax.swing.JButton("ESTADISTICAS");
+        estadisticasBtn.setFont(new java.awt.Font("Gontserrat", 0, 12));
+        estadisticasBtn.setText("ESTADISTICAS");
+        estadisticasBtn.addActionListener(new java.awt.event.ActionListener() {
+            @Override
+            public void actionPerformed(java.awt.event.ActionEvent e) {
+                com.frames.EstadisticasForm f = new com.frames.EstadisticasForm(Inicio.this);
+                f.setAlwaysOnTop(true);
+                f.setDefaultCloseOperation(javax.swing.WindowConstants.DISPOSE_ON_CLOSE);
+                f.setVisible(true);
+            }
+        });
+        jPanel1.add(estadisticasBtn, new org.netbeans.lib.awtextra.AbsoluteConstraints(960, 230, 150, -1));
     }
 
     /**
@@ -348,6 +363,8 @@ public class Inicio extends javax.swing.JFrame {
         modoReproduccionCombo = new javax.swing.JComboBox<>();
         historialButton = new javax.swing.JButton();
         importarPlaylistButton = new javax.swing.JButton();
+        graphBinario = new javax.swing.JButton();
+        graphAvl = new javax.swing.JButton();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
 
@@ -383,15 +400,6 @@ public class Inicio extends javax.swing.JFrame {
             }
         });
         jPanel1.add(playlistButton, new org.netbeans.lib.awtextra.AbsoluteConstraints(1150, 660, 140, 30));
-
-        importarPlaylistButton.setFont(new java.awt.Font("Gontserrat", 0, 12)); // NOI18N
-        importarPlaylistButton.setText("Importar Playlist");
-        importarPlaylistButton.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                importarPlaylistButtonActionPerformed(evt);
-            }
-        });
-        jPanel1.add(importarPlaylistButton, new org.netbeans.lib.awtextra.AbsoluteConstraints(1150, 700, 140, 30));
 
         listadoCanciones.setBackground(new java.awt.Color(102, 102, 102));
         listadoCanciones.setFont(new java.awt.Font("Gontserrat", 0, 14)); // NOI18N
@@ -490,13 +498,38 @@ public class Inicio extends javax.swing.JFrame {
         });
         jPanel1.add(historialButton, new org.netbeans.lib.awtextra.AbsoluteConstraints(960, 190, 150, -1));
 
+        importarPlaylistButton.setFont(new java.awt.Font("Gontserrat", 0, 12)); // NOI18N
+        importarPlaylistButton.setText("Importar Playlist");
+        importarPlaylistButton.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                importarPlaylistButtonActionPerformed(evt);
+            }
+        });
+        jPanel1.add(importarPlaylistButton, new org.netbeans.lib.awtextra.AbsoluteConstraints(1150, 700, 140, 30));
+
+        graphBinario.setText("Binario Graph");
+        graphBinario.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                graphBinarioActionPerformed(evt);
+            }
+        });
+        jPanel1.add(graphBinario, new org.netbeans.lib.awtextra.AbsoluteConstraints(1190, 830, -1, -1));
+
+        graphAvl.setText("AVL Graph");
+        graphAvl.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                graphAvlActionPerformed(evt);
+            }
+        });
+        jPanel1.add(graphAvl, new org.netbeans.lib.awtextra.AbsoluteConstraints(1090, 830, -1, -1));
+
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
         getContentPane().setLayout(layout);
         layout.setHorizontalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGap(0, 1321, Short.MAX_VALUE)
+            .addGap(0, 1342, Short.MAX_VALUE)
             .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                .addComponent(jPanel1, javax.swing.GroupLayout.DEFAULT_SIZE, 1321, Short.MAX_VALUE))
+                .addComponent(jPanel1, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
         );
         layout.setVerticalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
@@ -660,6 +693,24 @@ public class Inicio extends javax.swing.JFrame {
         e.setDefaultCloseOperation(DISPOSE_ON_CLOSE);
     }//GEN-LAST:event_historialButtonActionPerformed
 
+    private void graphAvlActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_graphAvlActionPerformed
+        
+        try {
+            renderizar(arbolAvl.toDOT(), "arbol_avl");
+        } catch (Exception ex) {
+            System.getLogger(Inicio.class.getName()).log(System.Logger.Level.ERROR, (String) null, ex);
+        }
+        
+    }//GEN-LAST:event_graphAvlActionPerformed
+
+    private void graphBinarioActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_graphBinarioActionPerformed
+        try {
+            renderizar(arbol.toDOT(), "arbol_binario");
+        } catch (Exception ex) {
+            System.getLogger(Inicio.class.getName()).log(System.Logger.Level.ERROR, (String) null, ex);
+        }
+    }//GEN-LAST:event_graphBinarioActionPerformed
+
 
     /**
      * @param args the command line arguments
@@ -692,7 +743,10 @@ public class Inicio extends javax.swing.JFrame {
     private javax.swing.JButton anteriorButton;
     private javax.swing.JLabel arbolTxt;
     private javax.swing.JButton generalButton;
+    private javax.swing.JButton graphAvl;
+    private javax.swing.JButton graphBinario;
     private javax.swing.JButton historialButton;
+    private javax.swing.JButton importarPlaylistButton;
     private javax.swing.JPanel jPanel1;
     private javax.swing.JScrollPane jScrollPane1;
     private javax.swing.JScrollPane jScrollPane2;
@@ -702,7 +756,6 @@ public class Inicio extends javax.swing.JFrame {
     public javax.swing.JComboBox<String> modoReproduccionCombo;
     private javax.swing.JButton playButton;
     private javax.swing.JButton playlistButton;
-    private javax.swing.JButton importarPlaylistButton;
     public javax.swing.JLabel playlistEnReproduccionLbl;
     private javax.swing.JLabel reproduccionLbl;
     private javax.swing.JButton siguienteButton;
@@ -750,7 +803,7 @@ public class Inicio extends javax.swing.JFrame {
             if (resultado == JFileChooser.APPROVE_OPTION) {
                 File carpeta = chooser.getSelectedFile();
 
-                ArbolBinario arbol = ArbolBinario.getInstancia();
+                arbol = ArbolBinario.getInstancia();
                 arbol.raiz = null;      //LIMPIAMOS EL ARBOL ANTES DE VOLVER A CARGAR
                 lista.limpiarLista();
                 lista.contador = 0;
@@ -778,13 +831,15 @@ public class Inicio extends javax.swing.JFrame {
                 
                 lista.nombre = "GENERAL";
                 
+                
+                
                 playlistActual = lista;
                 
                 playlists.add(lista);
 
                 modeloListaPlaylist.clear();
                 modeloListaCanciones.clear();    // LIMPIAMOS EL MODELO DEL HJSLIT
-                
+                modeloListaPlaylist.addElement(lista);
                 List<Cancion> temp = new ArrayList<>();
                 arbol.inOrderALista(arbol.raiz, temp); //CARGA AL JLIST
                 for(Cancion c : temp) {
@@ -843,4 +898,133 @@ public class Inicio extends javax.swing.JFrame {
         while(actual != playlist.inicio);
     }
     
+    public static void renderizar(String dot, String nombreArchivo) throws Exception {
+        String dotFile = nombreArchivo + ".dot";
+        String pngFile = nombreArchivo + ".png";
+        java.nio.file.Files.writeString(java.nio.file.Path.of(dotFile), dot);
+
+        try {
+            // Llama a Graphviz (debe estar instalado en el sistema)
+            Process p = Runtime.getRuntime().exec(new String[]{"dot", "-Tpng", dotFile, "-o", pngFile});
+            int exitCode = p.waitFor();
+            
+            if (exitCode != 0) {
+                javax.swing.JOptionPane.showMessageDialog(null, 
+                    "Graphviz terminó con código de error: " + exitCode + "\nPor favor, verifica el formato del árbol.", 
+                    "Error de Graphviz", javax.swing.JOptionPane.ERROR_MESSAGE);
+                return;
+            }
+            
+            java.io.File imgFile = new java.io.File(pngFile);
+            if (!imgFile.exists() || imgFile.length() == 0) {
+                javax.swing.JOptionPane.showMessageDialog(null, 
+                    "No se pudo generar la imagen del grafo (el archivo está vacío o no existe).", 
+                    "Error", javax.swing.JOptionPane.ERROR_MESSAGE);
+                return;
+            }
+
+            // Carga la imagen
+            java.awt.image.BufferedImage imagen = javax.imageio.ImageIO.read(imgFile);
+            
+            // Crea el visor interactivo (Ajuste automático / Tamaño real al hacer clic)
+            ImagePanel imagePanel = new ImagePanel(imagen);
+            javax.swing.JScrollPane scroll = new javax.swing.JScrollPane(imagePanel);
+            scroll.setBorder(null);
+
+            javax.swing.JFrame frame = new javax.swing.JFrame(nombreArchivo + " (Haz clic para alternar tamaño)");
+            frame.setDefaultCloseOperation(javax.swing.WindowConstants.DISPOSE_ON_CLOSE);
+            frame.add(scroll);
+            frame.setSize(900, 650);  // tamaño inicial de la ventana
+            frame.setLocationRelativeTo(null);  // centrado en pantalla
+            frame.setVisible(true);
+            
+        } catch (java.io.IOException e) {
+            javax.swing.JOptionPane.showMessageDialog(null, 
+                "No se pudo ejecutar Graphviz ('dot').\nAsegúrate de tener instalado Graphviz y de agregar la ruta de su binario al PATH del sistema.\nDetalle: " + e.getMessage(), 
+                "Error de Ejecución de Graphviz", javax.swing.JOptionPane.ERROR_MESSAGE);
+        }
+    }
+
+    private static class ImagePanel extends javax.swing.JPanel {
+        private final java.awt.Image originalImage;
+        private boolean fitToScreen = true;
+
+        public ImagePanel(java.awt.Image image) {
+            this.originalImage = image;
+            this.setBackground(new java.awt.Color(25, 20, 20)); // Negro Spotify
+            
+            // Alternar vista entre ajustar a pantalla y tamaño real con clic
+            this.addMouseListener(new java.awt.event.MouseAdapter() {
+                @Override
+                public void mouseClicked(java.awt.event.MouseEvent e) {
+                    fitToScreen = !fitToScreen;
+                    revalidate();
+                    repaint();
+                }
+            });
+            
+            // Cursor de mano para indicar que es interactivo
+            this.setCursor(java.awt.Cursor.getPredefinedCursor(java.awt.Cursor.HAND_CURSOR));
+            this.setToolTipText("Haz clic para alternar entre Ajustar a Pantalla y Tamaño Real");
+        }
+
+        @Override
+        public java.awt.Dimension getPreferredSize() {
+            if (originalImage == null) {
+                return new java.awt.Dimension(100, 100);
+            }
+            
+            if (fitToScreen) {
+                java.awt.Container parent = getParent();
+                if (parent instanceof javax.swing.JViewport) {
+                    return parent.getSize();
+                }
+                return new java.awt.Dimension(800, 600);
+            } else {
+                return new java.awt.Dimension(originalImage.getWidth(null), originalImage.getHeight(null));
+            }
+        }
+
+        @Override
+        protected void paintComponent(java.awt.Graphics g) {
+            super.paintComponent(g);
+            if (originalImage == null) return;
+
+            java.awt.Graphics2D g2d = (java.awt.Graphics2D) g;
+            // Configurar antialiasing e interpolación bilineal para mejor calidad
+            g2d.setRenderingHint(java.awt.RenderingHints.KEY_INTERPOLATION, java.awt.RenderingHints.VALUE_INTERPOLATION_BILINEAR);
+            g2d.setRenderingHint(java.awt.RenderingHints.KEY_ANTIALIASING, java.awt.RenderingHints.VALUE_ANTIALIAS_ON);
+
+            int imgW = originalImage.getWidth(null);
+            int imgH = originalImage.getHeight(null);
+
+            if (fitToScreen) {
+                int panelW = getWidth();
+                int panelH = getHeight();
+
+                double scaleX = (double) panelW / imgW;
+                double scaleY = (double) panelH / imgH;
+                double scale = Math.min(scaleX, scaleY);
+                
+                // Evitamos estirar la imagen si es pequeña
+                if (scale > 1.0) {
+                    scale = 1.0;
+                }
+
+                int newW = (int) (imgW * scale);
+                int newH = (int) (imgH * scale);
+
+                int x = (panelW - newW) / 2;
+                int y = (panelH - newH) / 2;
+
+                g2d.drawImage(originalImage, x, y, newW, newH, null);
+            } else {
+                int panelW = getWidth();
+                int panelH = getHeight();
+                int x = Math.max(0, (panelW - imgW) / 2);
+                int y = Math.max(0, (panelH - imgH) / 2);
+                g2d.drawImage(originalImage, x, y, null);
+            }
+        }
+    }
 }
